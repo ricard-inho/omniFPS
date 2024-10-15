@@ -1,0 +1,12 @@
+name: ZeroGLab
+seed: 42  
+physics_dt: 0.0333 # 30 Hz
+rendering_dt: 0.0333 # 30 Hz
+enforce_realtime: true
+
+zeroglab_settings: # These settings cannot be changed.
+  lab_length: 10.0
+  lab_width: 6.5
+  resolution: 0.01
+
+  room_lights_path: /ZeroGLab/CeilingLights

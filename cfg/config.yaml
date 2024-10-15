@@ -1,8 +1,9 @@
 defaults:
-  - environment: lunalab
+  - environment: zeroglab
   - rendering: ray_tracing
   - mode: ROS2
   - physics: default_physics
+  - robot: modularfloatingplatform
 
 hydra:
   output_subdir: null

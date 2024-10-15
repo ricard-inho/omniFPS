@@ -1,0 +1,11 @@
+robots_settings:
+  uses_nucleus: False
+  is_ROS2: True
+  max_robots: 5
+  robots_root: "/Robots"
+  mass: 5.32
+  CoM: [0,0,0]
+  radius: 0.31
+  shape: "sphere"
+  refinement: 2
+  height: 0.5
