@@ -16,6 +16,8 @@ from rclpy.node import Node
 
 from src.robots.robot import RobotManager
 
+import torch
+
 
 class ROS_RobotManager(Node):
     """
@@ -27,9 +29,11 @@ class ROS_RobotManager(Node):
         self.RM = RobotManager(RM_conf)
 
         self.create_subscription(PoseStamped, "/ZeroGLab/Robots/Spawn", self.spawn_robot, 1)
+        self.create_subscription(PoseStamped, "/ZeroGLab/Robots/SpawnFP", self.spawn_floating_platform, 1)
         self.create_subscription(PoseStamped, "/ZeroGLab/Robots/Teleport", self.teleport_robot, 1)
         self.create_subscription(String, "/ZeroGLab/Robots/Reset", self.reset_robot, 1)
         self.create_subscription(Empty, "/ZeroGLab/Robots/ResetAll", self.reset_robots, 1)
+        self.create_subscription(PoseStamped, "/ZeroGLab/Robots/Forward", self.apply_forces, 1)
 
         self.domain_id = 0
         self.modifications: List[Tuple[callable, dict]] = []
@@ -57,6 +61,46 @@ class ROS_RobotManager(Node):
         for mod in self.modifications:
             mod[0](**mod[1])
         self.clear_modifications()
+
+    def spawn_floating_platform(self, data: PoseStamped) -> None:
+        """
+        Spawns floating platform w/o usd
+
+        Args:
+            data (String): Name and path of the robot to spawn.
+                           Must be in the format: robot_name
+        """
+        robot_name, usd_path = data.header.frame_id.split(":")
+        p = [data.pose.position.x, data.pose.position.y, data.pose.position.z]
+        q = [data.pose.orientation.w, data.pose.orientation.x, data.pose.orientation.y, data.pose.orientation.z]
+        self.modifications.append(
+            [
+                self.RM.add_floating_platform,
+                {"robot_name": robot_name, "p": p, "q": q, "domain_id": self.domain_id}
+            ]
+        )
+
+
+    def apply_forces(self, data: PoseStamped) -> None:
+
+        forces = torch.tensor([
+                        [1000, 1000, 0.],
+                        [0., 0., 0.],
+                        [0., 0., 0.],
+                        [0., 0., 0.]
+                    ])
+        positions = torch.ones((4,3))
+        is_global=False
+        robot_name="FloatingPlatform"
+
+        self.modifications.append(
+            [
+                self.RM.apply_forces,
+                {"forces": forces, "positions": positions, "is_global": is_global, "robot_name": robot_name}
+            ]
+        )
+        
+
 
     def spawn_robot(self, data: PoseStamped) -> None:
         """

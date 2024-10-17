@@ -3,7 +3,7 @@
 # Build the Docker image
 SCRIPT_DIR="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" &>/dev/null && pwd)"
 PROJECT_DIR="$(dirname "${SCRIPT_DIR}")"
-TAG="ros2-humble-fpl"
+TAG="ros2-humble-zeroglab"
 DOCKERFILE="${SCRIPT_DIR}/Dockerfile"
 
 DOCKER_BUILD_CMD=(docker build --no-cache "${SCRIPT_DIR}" --tag ${TAG})

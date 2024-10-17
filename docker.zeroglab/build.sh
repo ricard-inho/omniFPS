@@ -7,7 +7,7 @@ git submodule update
 # Build the Docker image
 SCRIPT_DIR="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" &>/dev/null && pwd)"
 PROJECT_DIR="$(dirname "${SCRIPT_DIR}")"
-TAG="isaac-sim-fpl"
+TAG="isaac-sim-zeroglab"
 DOCKERFILE="${SCRIPT_DIR}/Dockerfile"
 
 DOCKER_BUILD_CMD=(docker build "${SCRIPT_DIR}" --tag ${TAG})

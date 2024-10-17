@@ -1,17 +1,19 @@
-__author__ = "Antoine Richard, Junnosuke Kamohara"
+__author__ = "Antoine Richard, Junnosuke Kamohara, Ricard Marsal"
 __copyright__ = "Copyright 2023-24, Space Robotics Lab, SnT, University of Luxembourg, SpaceR"
 __license__ = "BSD 3-Clause"
 __version__ = "2.0.0"
-__maintainer__ = "Antoine Richard"
-__email__ = "antoine.richard@uni.lu"
+__maintainer__ = "Ricard Marsal"
+__email__ = "ricard.marsal@uni.lu"
 __status__ = "development"
 
 from typing import Dict, List, Tuple
 import numpy as np
 import warnings
 import os
+import yaml
 
 import omni
+from omni.isaac.core.utils.prims import get_prim_at_path
 from omni.isaac.core.world import World
 import omni.graph.core as og
 from omni.isaac.core.utils.stage import add_reference_to_stage
@@ -23,10 +25,17 @@ from omni.isaac.core.utils.rotations import quat_to_rot_matrix
 from omni.isaac.core.utils.nucleus import get_assets_root_path
 from omni.isaac.dynamic_control import _dynamic_control
 from omni.isaac.core.prims import RigidPrim, RigidPrimView
-from pxr import Gf, UsdGeom, Usd
+from pxr import Gf, UsdGeom, Usd, UsdPhysics, PhysxSchema
 
+from src.utils.pxr_utils import (
+    createXform,
+    addDefaultOps,
+    setDefaultOpsTyped,
+)
 
 from src.configurations.robot_confs import RobotManagerConf
+from src.robots.articulations.modular_floating_platform import ModularFloatingPlatform
+from src.robots.articulations.views.modular_floating_platform_view import ModularFloatingPlatformView
 
 
 class RobotManager:
@@ -107,6 +116,52 @@ class RobotManager:
                     robot_parameter.target_links,
                     world,
                 )
+
+    def add_floating_platform(
+        self,
+        robot_name: str = None,
+        p: Tuple[float, float, float] = [0, 0, 0],
+        q: Tuple[float, float, float, float] = [0, 0, 0, 1],
+        domain_id: int = None
+    ) -> None:
+        
+        """
+        Add floating platform to the scene
+
+        Args:
+            robot_name (str): The name of the robot.
+            p (Tuple[float, float, float]): The position of the robot. (x, y, z)
+            q (Tuple[float, float, float, float]): The orientation of the robot. (w, x, y, z)
+            domain_id (int): The domain id of the robot. Not required if the robot is not ROS2 enabled.
+        """
+        if robot_name[0] != "/":
+            robot_name = "/" + robot_name
+        if self.num_robots >= self.max_robots:
+            pass
+        if robot_name in self.robots.keys():
+            warnings.warn("Robot already exists. Ignoring request.")
+        else:
+            self.robots[robot_name] = Robot(
+                "/None",
+                robot_name,
+                is_on_nucleus=self.uses_nucleus,
+                is_ROS2=self.is_ROS2,
+                domain_id=domain_id,
+                robots_root=self.robots_root,
+            )
+
+            self.robots[robot_name].load_floating_platform(p,q)
+            self.num_robots += 1
+
+    def apply_forces(self, forces, positions, is_global: bool, robot_name: str = None,) -> None:
+        if robot_name[0] != "/":
+            robot_name = "/" + robot_name
+
+        if robot_name in self.robots.keys():
+            self.robots[robot_name].set_forces(forces, positions, is_global)
+        else:
+            warnings.warn("Robot doesn't exists. Ignoring request.")
+
 
     def add_robot(
         self,
@@ -266,6 +321,66 @@ class Robot:
             if self.is_ROS2:
                 prim.GetAttribute("graph:variable:Context").Set(self.domain_id)
 
+    def load_floating_platform(self, position: np.ndarray, orientation: np.ndarray) -> None:
+        """
+        self.stage = omni.usd.get_context().get_stage()
+        self.set_reset_pose(position, orientation)
+
+        position = Gf.Vec3d(position)
+        rotation = Gf.Quatd(orientation[0],orientation[1],orientation[2],orientation[3])
+        scale = Gf.Vec3d(1,1,1)
+
+        prefix = "/Robot/FloatingPlatform"
+        obj_prim, prim_path = createXform(self.stage, prefix)
+        xform = UsdGeom.Xformable(obj_prim)
+        addDefaultOps(xform)
+        setDefaultOpsTyped(xform, position, rotation, scale)
+
+        cylinder_path = prim_path + "/Cylinder"
+        cylinder_prim = UsdGeom.Cylinder.Define(self.stage, cylinder_path)
+        cylinder_prim.CreateRadiusAttr(0.25)
+        cylinder_prim.CreateHeightAttr(0.5)
+        cylinder_xform = UsdGeom.Xformable(cylinder_prim)
+        cylinder_xform.AddTranslateOp().Set(Gf.Vec3d(0, 0, 0))
+        cylinder_xform.AddRotateXYZOp().Set(Gf.Vec3f(0, 0, 0))
+        cylinder_xform.AddScaleOp().Set(Gf.Vec3f(1, 1, 1))
+        UsdPhysics.RigidBodyAPI.Apply(cylinder_prim.GetPrim())
+        UsdPhysics.CollisionAPI.Apply(cylinder_prim.GetPrim())
+        mass_api = UsdPhysics.MassAPI.Apply(cylinder_prim.GetPrim())
+        mass_api.CreateMassAttr().Set(5.0)
+        mass_api.CreateCenterOfMassAttr().Set(Gf.Vec3d([0, 0, 0]))
+        # obj_prim.GetReferences().AddReference(path)
+        # obj_prim.SetInstanceable(True)
+        """
+
+        with open("cfg/robot/modularfloatingplatform.yaml", "r") as file:
+            cfg = yaml.safe_load(file)
+
+        name = cfg["robots_settings"]["name"]
+        fp = ModularFloatingPlatform(
+            f"/Robots/{name}", 
+            cfg=cfg, 
+            translation=[position],
+            orientation=[orientation[1], orientation[2], orientation[3], orientation[0]]
+        )
+        
+        root_path = f"/Robots/{name}"
+        self.platform = ModularFloatingPlatformView(
+            prim_paths_expr=root_path,
+            name="modular_floating_platform_view",
+            track_contact_force=True,
+        )
+
+        self.platform.initialize()
+
+
+    def set_forces(self, forces, positions, is_global: bool) -> None:
+
+        self.platform.thrusters.apply_forces_and_torques_at_pos(
+            forces=forces, positions=positions, is_global=is_global
+        )
+
+
     def load(self, position: np.ndarray, orientation: np.ndarray) -> None:
         """
         Load the robot in the scene, and automatically edit its graphs.
@@ -346,7 +461,7 @@ class Robot:
             ],
         )
 
-
+    
 class RobotRigidGroup:
     """
     Class which deals with rigidprims and rigidprimview of a single robot.

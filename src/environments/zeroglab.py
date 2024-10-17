@@ -12,7 +12,7 @@ import numpy as np
 from omni.isaac.core.utils.stage import open_stage, add_reference_to_stage
 import omni
 
-from pxr import UsdGeom, UsdLux, Gf, Usd
+from pxr import UsdGeom, UsdLux, Gf, Usd, UsdPhysics
 
 from src.configurations.environments import ZeroGLabConf
 from src.environments.base_env import BaseEnv
@@ -54,10 +54,24 @@ class ZeroGLabController(BaseEnv):
         """
         Builds the scene. It either loads the scene from a file or creates it from scratch.
         """
-
-        scene_path = get_assets_path() + "/USD_Assets/environments/lab_test.usd"
+        stage = omni.usd.get_context().get_stage()
+        
+        scene_path = get_assets_path() + "/USD_Assets/environments/zero_g_lab.usd"
         # Loads the Lunalab
-        add_reference_to_stage(scene_path, self.scene_name)
+        stage_prim = add_reference_to_stage(scene_path, self.scene_name)
+        UsdPhysics.CollisionAPI.Apply(stage_prim)
+
+        #Move to correct location
+        zero_g_lab_prim = stage.GetPrimAtPath(self.scene_name)
+        zero_g_lab_xform = UsdGeom.Xformable(zero_g_lab_prim)
+        zero_g_lab_xform.AddTranslateOp().Set(Gf.Vec3d(-1.5, -2.5, 0))
+
+
+        # Creates lights
+        distant_light = UsdLux.DistantLight.Define(stage, "/Lights/sun")
+        distant_light.GetIntensityAttr().Set(7000)
+
+
 
     def instantiate_scene(self) -> None:
         """

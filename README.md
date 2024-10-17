@@ -5,10 +5,10 @@
 Start simulation's docker
 
 > [!IMPORTANT]
-> Build docker first by running `./docker.fpl/build.sh`
+> Build docker first by running `./docker.zeroGlab/build.sh`
 
 ```
-./docker.fpl/run.sh
+./docker.zeroGlab/run.sh
 /isaac-sim/python.sh run.py
 ```
 
@@ -20,5 +20,5 @@ On another terminal start the ROS2 humble docker.
 
 ```
 ./docker.ros2_humble/run.sh
-ros2 run ...
+ros2 topic pub --once /ZeroGLab/Robots/SpawnFP geometry_msgs/msg/PoseStamped "{'header':{'stamp':{'sec':0.0,'nanosec':0.0},'frame_id':'FloatingPlatform'},pose:{'position':{'x':'10.0','y':10.0,'z': 1.0},'orientation':{'x':0.0,'y':0.0,'z':0.0,'w':1.0}}}"
 ```

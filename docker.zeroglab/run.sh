@@ -1,10 +1,10 @@
 #!/bin/bash
 xhost +
-docker run --name isaac-sim-fpl-container -it --gpus all -e "ACCEPT_EULA=Y" --rm --network=host --ipc=host \
+docker run --name isaac-sim-zeroGlab-container -it --gpus all -e "ACCEPT_EULA=Y" --rm --network=host --ipc=host \
     -v $HOME/.Xauthority:/root/.Xauthority \
     -e DISPLAY \
     -e "PRIVACY_CONSENT=Y" \
-    -v ${PWD}:/workspace/fpl \
+    -v ${PWD}:/workspace/zeroGlab \
     -v ~/docker/isaac-sim/cache/kit:/isaac-sim/kit/cache:rw \
     -v ~/docker/isaac-sim/cache/ov:/root/.cache/ov:rw \
     -v ~/docker/isaac-sim/cache/pip:/root/.cache/pip:rw \
@@ -13,4 +13,4 @@ docker run --name isaac-sim-fpl-container -it --gpus all -e "ACCEPT_EULA=Y" --rm
     -v ~/docker/isaac-sim/logs:/root/.nvidia-omniverse/logs:rw \
     -v ~/docker/isaac-sim/data:/root/.local/share/ov/data:rw \
     -v ~/docker/isaac-sim/documents:/root/Documents:rw \
-    isaac-sim-fpl:latest
+    isaac-sim-zeroglab:latest

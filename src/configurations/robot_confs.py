@@ -36,12 +36,7 @@ class RobotManagerConf:
     is_ROS2: str = False
     max_robots: int = 5
     robots_root: str = "/Robots"
-    shape: str = "sphere"
-    radius: float = 0.31
-    height: float = 0.5
-    mass: float = 5.32
-    CoM: tuple = (0, 0, 0)
-    refinement: int = 2
+    name: str = "MyRobot"
     parameters: List[RobotParameters] = field(default_factory=list)
 
     def __post_init__(self):
