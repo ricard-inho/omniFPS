@@ -10,7 +10,7 @@ from typing import List, Tuple
 
 from pxr import Gf
 
-from std_msgs.msg import String, Empty
+from std_msgs.msg import String, Empty, Float32MultiArray
 from geometry_msgs.msg import PoseStamped
 from rclpy.node import Node
 
@@ -33,7 +33,7 @@ class ROS_RobotManager(Node):
         self.create_subscription(PoseStamped, "/ZeroGLab/Robots/Teleport", self.teleport_robot, 1)
         self.create_subscription(String, "/ZeroGLab/Robots/Reset", self.reset_robot, 1)
         self.create_subscription(Empty, "/ZeroGLab/Robots/ResetAll", self.reset_robots, 1)
-        self.create_subscription(PoseStamped, "/ZeroGLab/Robots/Forward", self.apply_forces, 1)
+        self.create_subscription(Float32MultiArray, "/ZeroGLab/Robots/Forward", self.apply_forces, 1)
 
         self.domain_id = 0
         self.modifications: List[Tuple[callable, dict]] = []
@@ -81,21 +81,22 @@ class ROS_RobotManager(Node):
         )
 
 
-    def apply_forces(self, data: PoseStamped) -> None:
+    def apply_forces(self, data: Float32MultiArray) -> None:
 
-        forces = torch.tensor([
-                        [1000, 1000, 0.],
-                        [0., 0., 0.],
-                        [0., 0., 0.],
-                        [0., 0., 0.]
-                    ])
-        positions = torch.tensor([
-                        [0.5, 0.5, 0.],
-                        [0., 0., 0.],
-                        [0., 0., 0.],
-                        [0., 0., 0.]
-                    ])
-        is_global=True
+        received_array = data.data
+        forces = [
+            [500.0, 0.0, 0.0] if value == 1.0 else [0.0, 0.0, 0.0]
+            for value in received_array
+        ]
+
+        positions = [
+            [0.0, 0.31, 0.0],
+            [0.0, 0.31, 0.0],
+            [0.0, -0.31, 0.0],
+            [0.0, -0.31, 0.0],
+        ]
+
+        is_global = True
         robot_name="FloatingPlatform"
 
         self.modifications.append(

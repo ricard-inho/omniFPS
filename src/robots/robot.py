@@ -385,13 +385,24 @@ class Robot:
         dc = _dynamic_control.acquire_dynamic_control_interface()
         articulation = dc.get_articulation("/Robots/FloatingPlatform")
         root_body = dc.find_articulation_body(articulation, "v_thruster_0")
-        force_vector = [500.0, 0.0, 0.0] 
-        position = [0.0, 0.31, 0.0] 
+        force_vector = forces[0]
+        position = positions[0] 
         success = dc.apply_body_force(root_body, force_vector, position, False)
 
         root_body = dc.find_articulation_body(articulation, "v_thruster_2")
-        force_vector = [500, 0.0, 0.0] 
-        position = [0.0, -0.31, 0.0] 
+        force_vector = forces[1] 
+        position = positions[1] 
+
+        root_body = dc.find_articulation_body(articulation, "v_thruster_1")
+        force_vector = forces[2]
+        position = positions[2] 
+        success = dc.apply_body_force(root_body, force_vector, position, False)
+
+        root_body = dc.find_articulation_body(articulation, "v_thruster_3")
+        force_vector = forces[3] 
+        position = positions[3]
+
+
         success = dc.apply_body_force(root_body, force_vector, position, False)
 
         # self.platform.thrusters.apply_forces_and_torques_at_pos(
