@@ -384,26 +384,32 @@ class Robot:
         from omni.isaac.dynamic_control import _dynamic_control
         dc = _dynamic_control.acquire_dynamic_control_interface()
         articulation = dc.get_articulation("/Robots/FloatingPlatform")
-        root_body = dc.find_articulation_body(articulation, "v_thruster_0")
+
+        v_thruster_0 = dc.find_articulation_body(articulation, "v_thruster_0")
         force_vector = forces[0]
         position = positions[0] 
-        success = dc.apply_body_force(root_body, force_vector, position, False)
+        success = dc.apply_body_force(v_thruster_0, force_vector, position, False)
+        print(f"Thruster 0-> Force: {force_vector}, position: {position}")
 
-        root_body = dc.find_articulation_body(articulation, "v_thruster_2")
+        v_thruster_1 = dc.find_articulation_body(articulation, "v_thruster_1")
         force_vector = forces[1] 
         position = positions[1] 
+        success = dc.apply_body_force(v_thruster_1, force_vector, position, False)
+        print(f"Thruster 1-> Force: {force_vector}, position: {position}")
 
-        root_body = dc.find_articulation_body(articulation, "v_thruster_1")
+        v_thruster_2 = dc.find_articulation_body(articulation, "v_thruster_2")
         force_vector = forces[2]
         position = positions[2] 
-        success = dc.apply_body_force(root_body, force_vector, position, False)
+        success = dc.apply_body_force(v_thruster_2, force_vector, position, False)
+        print(f"Thruster 2-> Force: {force_vector}, position: {position}")
 
-        root_body = dc.find_articulation_body(articulation, "v_thruster_3")
+        v_thruster_3 = dc.find_articulation_body(articulation, "v_thruster_3")
         force_vector = forces[3] 
         position = positions[3]
+        success = dc.apply_body_force(v_thruster_3, force_vector, position, False)
+        print(f"Thruster 3-> Force: {force_vector}, position: {position}")
 
-
-        success = dc.apply_body_force(root_body, force_vector, position, False)
+        print("##########################################################################")
 
         # self.platform.thrusters.apply_forces_and_torques_at_pos(
         #     forces=forces, positions=positions, is_global=is_global
