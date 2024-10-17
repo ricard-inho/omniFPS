@@ -89,8 +89,13 @@ class ROS_RobotManager(Node):
                         [0., 0., 0.],
                         [0., 0., 0.]
                     ])
-        positions = torch.ones((4,3))
-        is_global=False
+        positions = torch.tensor([
+                        [0.5, 0.5, 0.],
+                        [0., 0., 0.],
+                        [0., 0., 0.],
+                        [0., 0., 0.]
+                    ])
+        is_global=True
         robot_name="FloatingPlatform"
 
         self.modifications.append(

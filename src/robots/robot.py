@@ -371,14 +371,32 @@ class Robot:
             track_contact_force=True,
         )
 
+        stage = omni.usd.get_context().get_stage()
+        world = World(stage)
+        world.reset()
         self.platform.initialize()
+        world.scene.add(self.platform)
+        world.reset()
 
 
     def set_forces(self, forces, positions, is_global: bool) -> None:
 
-        self.platform.thrusters.apply_forces_and_torques_at_pos(
-            forces=forces, positions=positions, is_global=is_global
-        )
+        from omni.isaac.dynamic_control import _dynamic_control
+        dc = _dynamic_control.acquire_dynamic_control_interface()
+        articulation = dc.get_articulation("/Robots/FloatingPlatform")
+        root_body = dc.find_articulation_body(articulation, "v_thruster_0")
+        force_vector = [500.0, 0.0, 0.0] 
+        position = [0.0, 0.31, 0.0] 
+        success = dc.apply_body_force(root_body, force_vector, position, False)
+
+        root_body = dc.find_articulation_body(articulation, "v_thruster_2")
+        force_vector = [500, 0.0, 0.0] 
+        position = [0.0, -0.31, 0.0] 
+        success = dc.apply_body_force(root_body, force_vector, position, False)
+
+        # self.platform.thrusters.apply_forces_and_torques_at_pos(
+        #     forces=forces, positions=positions, is_global=is_global
+        # )
 
 
     def load(self, position: np.ndarray, orientation: np.ndarray) -> None:
