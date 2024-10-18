@@ -147,13 +147,13 @@ class CreatePlatform:
         # Creates a set of joints to constrain the platform on the XY plane (3DoF).
         self.createXYPlaneLock()
         # Creates the movable CoM and the joints to control it.
-        self.createMovableCoM(
-            self.platform_path + "/movable_CoM",
-            "CoM",
-            self.settings.radius / 2,
-            self.settings.CoM,
-            self.settings.mass,
-        )
+        # self.createMovableCoM(
+        #     self.platform_path + "/movable_CoM",
+        #     "CoM",
+        #     self.settings.radius / 2,
+        #     self.settings.CoM,
+        #     self.settings.mass,
+        # )
         if self.camera_cfg is not None:
             self.createCamera()
         else: 

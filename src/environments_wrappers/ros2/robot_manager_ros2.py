@@ -85,8 +85,8 @@ class ROS_RobotManager(Node):
 
         received_array = data.data
         forces = [
-            [-500.0, 0.0, 0.0] if value == 1.0 and (i % 2 == 1) else
-            [500.0, 0.0, 0.0] if value == 1.0 else
+            [-1000.5, 0.0, 0.0] if value == 1.0 and (i % 2 == 1) else
+            [1000.5, 0.0, 0.0] if value == 1.0 else
             [0.0, 0.0, 0.0]
             for i, value in enumerate(received_array)
         ]

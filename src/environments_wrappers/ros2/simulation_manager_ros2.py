@@ -185,9 +185,8 @@ class ROS2_SimulationManager:
         # Keep it in mind if you want to go crazy with the ROS2 calls to modify the sim...
 
         # Preload the assets
-        if cfg["environment"]["name"] == "LargeScale":
-            height, quat = self.ROSLabManager.LC.get_height_and_normal((0.0, 0.0, 0.0))
-            self.ROSRobotManager.RM.preload_robot_at_pose(self.world, (0, 0, height + 0.5), (1, 0, 0, 0))
+        if cfg["robot"]["robots_settings"]["name"] == "FloatingPlatform":
+            self.ROSRobotManager.RM.preload_robot_at_pose(self.world, (0, 0, 0.4), (1, 0, 0, 0))
         else:
             self.ROSRobotManager.RM.preload_robot(self.world)
         self.ROSLabManager.FPLC.add_robot_manager(self.ROSRobotManager.RM)

@@ -30,24 +30,24 @@ class ModularFloatingPlatformView(ArticulationView):
             name="base_view",
             track_contact_forces=track_contact_force,
         )
-        self.CoM = RigidPrimView(
-            prim_paths_expr=f"{prim_paths_expr}/movable_CoM/CoM",
-            name="CoM_view",
-        )
+        # self.CoM = RigidPrimView(
+        #     prim_paths_expr=f"{prim_paths_expr}/movable_CoM/CoM",
+        #     name="CoM_view",
+        # )
         self.thrusters = RigidPrimView(
             prim_paths_expr=f"{prim_paths_expr}/v_thruster_*",
             name="thrusters",
         )
 
-    def get_CoM_indices(self):
-        self.CoM_shifter_indices = [
-            self.get_dof_index("com_x_axis_joint"),
-            self.get_dof_index("com_y_axis_joint"),
-        ]
+    # def get_CoM_indices(self):
+    #     self.CoM_shifter_indices = [
+    #         self.get_dof_index("com_x_axis_joint"),
+    #         self.get_dof_index("com_y_axis_joint"),
+    #     ]
 
-    def get_plane_lock_indices(self):
-        self.lock_indices = [
-            self.get_dof_index("fp_world_joint_x"),
-            self.get_dof_index("fp_world_joint_y"),
-            self.get_dof_index("fp_world_joint_z"),
-        ]
+    # def get_plane_lock_indices(self):
+    #     self.lock_indices = [
+    #         self.get_dof_index("fp_world_joint_x"),
+    #         self.get_dof_index("fp_world_joint_y"),
+    #         self.get_dof_index("fp_world_joint_z"),
+    #     ]

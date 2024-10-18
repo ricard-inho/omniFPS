@@ -409,7 +409,7 @@ class Robot:
         success = dc.apply_body_force(v_thruster_3, force_vector, position, False)
         print(f"Thruster 3-> Force: {force_vector}, position: {position}")
 
-        print("##########################################################################")
+        print("##########################################################################check local frame")
 
         # self.platform.thrusters.apply_forces_and_torques_at_pos(
         #     forces=forces, positions=positions, is_global=is_global

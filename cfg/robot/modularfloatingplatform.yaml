@@ -7,13 +7,13 @@ robots_settings:
 core:
   mass: 5.32
   CoM: [0,0,0]
-  radius: 0.31
+  radius: 0.3
   shape: "sphere"
   refinement: 2
   enable_collision: True
 configuration:
   use_four_configurations: False
-  num_anchors: 2
+  num_anchors: 4
   offset: 0.75839816339
   thrust_force: 1.0
   visualize: True
