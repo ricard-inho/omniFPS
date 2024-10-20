@@ -1,9 +1,18 @@
 robots_settings:
   uses_nucleus: False
   is_ROS2: True
-  max_robots: 5
+  max_robots: 1
   robots_root: "/Robots"
   name: FloatingPlatform
+  parameters:
+    -
+      robot_name: FloatingPlatform
+      usd_path: /workspace/zeroGlab/assets/USD_Assets/robots/FloatingPlatform.usd
+      pose:
+        position: [-3.0, -2.0, 0.4]
+        orientation: [0, 0, 0, 1]
+      domain_id: 0
+      target_links: []
 core:
   mass: 5.32
   CoM: [0,0,0]

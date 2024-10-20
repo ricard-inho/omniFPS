@@ -365,6 +365,35 @@ def createLimit(
 # ==================================================================================================
 
 
+def createObject(prefix: str,
+    stage: Usd.Stage,
+    path: str,
+    position: Gf.Vec3d = Gf.Vec3d(0, 0, 0),
+    rotation: Gf.Quatd = Gf.Quatd(0,0,0,1),
+    scale: Gf.Vec3d = Gf.Vec3d(1,1,1),
+    is_instance: bool = True,
+    ) -> Tuple[Usd.Prim, str]:
+    """
+    Creates a 3D object from a USD file and adds it to the stage.
+    
+    Args:
+        prefix (str): The prefix of the object.
+        stage (Usd.Stage): The stage.
+        path (str): The path to the USD file.
+        position (Gf.Vec3d, optional): The position of the object. Defaults to Gf.Vec3d(0, 0, 0).
+        rotation (Gf.Quatd, optional): The rotation of the object. Defaults to Gf.Quatd(0,0,0,1).
+        scale (Gf.Vec3d, optional): The scale of the object. Defaults to Gf.Vec3d(1,1,1).
+        is_instance (bool, optional): Whether the object is an instance or not. Defaults to True."""
+    
+    obj_prim, prim_path = createXform(stage, prefix)
+    xform = UsdGeom.Xformable(prim_path)
+    addDefaultOps(xform)
+    setDefaultOpsTyped(xform, position, rotation, scale)
+    prim_path.GetReferences().AddReference(path)
+    if is_instance:
+        obj_prim.SetInstanceable(True)
+    return obj_prim, prim_path
+
 def createXform(
     stage: Usd.Stage,
     path: str,

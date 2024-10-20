@@ -28,6 +28,7 @@ from omni.isaac.core.prims import RigidPrim, RigidPrimView
 from pxr import Gf, UsdGeom, Usd, UsdPhysics, PhysxSchema
 
 from src.utils.pxr_utils import (
+    createObject,
     createXform,
     addDefaultOps,
     setDefaultOpsTyped,
@@ -60,7 +61,7 @@ class RobotManager:
         self.is_ROS2 = self.RM_conf.is_ROS2
         self.max_robots = self.RM_conf.max_robots
         self.robots_root = self.RM_conf.robots_root
-        # createXform(self.stage, self.robots_root)
+        createXform(self.stage, self.robots_root)
         self.robots: Dict[str, Robot] = {}
         self.robots_RG: Dict[str, RobotRigidGroup] = {}
         self.num_robots = 0
@@ -427,17 +428,17 @@ class Robot:
 
         self.stage = omni.usd.get_context().get_stage()
         self.set_reset_pose(position, orientation)
-        # if self.is_on_nucleus:
-        #     nucleus = get_assets_root_path()
-        #     self.usd_path = os.path.join(nucleus, self.usd_path)
-        # createObject(
-        #     self.robot_path,
-        #     self.stage,
-        #     self.usd_path,
-        #     is_instance=False,
-        #     position=Gf.Vec3d(*position),
-        #     rotation=Gf.Quatd(*orientation),
-        # )
+        if self.is_on_nucleus:
+            nucleus = get_assets_root_path()
+            self.usd_path = os.path.join(nucleus, self.usd_path)
+        createObject(
+            self.robot_path,
+            self.stage,
+            self.usd_path,
+            is_instance=False,
+            position=Gf.Vec3d(*position),
+            rotation=Gf.Quatd(*orientation),
+        )
         self.edit_graphs()
 
     def get_pose(self) -> List[float]:
