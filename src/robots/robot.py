@@ -257,7 +257,7 @@ class RobotManager:
         if robot_name in self.robots.keys():
             self.robots[robot_name].teleport(position, orientation)
         else:
-            warnings.warn("Robot does not exist. Ignoring request.")
+            warnings.warn(f"Robot {robot_name} does not exist. Ignoring request.")
             print("available robots: ", self.robots.keys())
 
 
@@ -382,32 +382,30 @@ class Robot:
 
     def set_forces(self, forces, positions, is_global: bool) -> None:
 
-        from omni.isaac.dynamic_control import _dynamic_control
-        dc = _dynamic_control.acquire_dynamic_control_interface()
-        articulation = dc.get_articulation("/Robots/FloatingPlatform")
+        articulation = self.dc.get_articulation("/Robots/FloatingPlatform")
 
-        v_thruster_0 = dc.find_articulation_body(articulation, "v_thruster_0")
+        v_thruster_0 = self.dc.find_articulation_body(articulation, "v_thruster_0")
         force_vector = forces[0]
         position = positions[0] 
-        success = dc.apply_body_force(v_thruster_0, force_vector, position, False)
+        success = self.dc.apply_body_force(v_thruster_0, force_vector, position, False)
         print(f"Thruster 0-> Force: {force_vector}, position: {position}")
 
-        v_thruster_1 = dc.find_articulation_body(articulation, "v_thruster_1")
+        v_thruster_1 = self.dc.find_articulation_body(articulation, "v_thruster_1")
         force_vector = forces[1] 
         position = positions[1] 
-        success = dc.apply_body_force(v_thruster_1, force_vector, position, False)
+        success = self.dc.apply_body_force(v_thruster_1, force_vector, position, False)
         print(f"Thruster 1-> Force: {force_vector}, position: {position}")
 
-        v_thruster_2 = dc.find_articulation_body(articulation, "v_thruster_2")
+        v_thruster_2 = self.dc.find_articulation_body(articulation, "v_thruster_2")
         force_vector = forces[2]
         position = positions[2] 
-        success = dc.apply_body_force(v_thruster_2, force_vector, position, False)
+        success = self.dc.apply_body_force(v_thruster_2, force_vector, position, False)
         print(f"Thruster 2-> Force: {force_vector}, position: {position}")
 
-        v_thruster_3 = dc.find_articulation_body(articulation, "v_thruster_3")
+        v_thruster_3 = self.dc.find_articulation_body(articulation, "v_thruster_3")
         force_vector = forces[3] 
         position = positions[3]
-        success = dc.apply_body_force(v_thruster_3, force_vector, position, False)
+        success = self.dc.apply_body_force(v_thruster_3, force_vector, position, False)
         print(f"Thruster 3-> Force: {force_vector}, position: {position}")
 
         print("##########################################################################check local frame")

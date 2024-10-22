@@ -1,9 +1,9 @@
-__author__ = "Antoine Richard"
+__author__ = "Antoine Richard, Ricard Marsal"
 __copyright__ = "Copyright 2023, Space Robotics Lab, SnT, University of Luxembourg, SpaceR"
 __license__ = "GPL"
 __version__ = "1.0.0"
-__maintainer__ = "Antoine Richard"
-__email__ = "antoine.richard@uni.lu"
+__maintainer__ = "Ricard Marsal"
+__email__ = "ricard.marsal@uni.lu"
 __status__ = "development"
 
 from typing import List, Tuple
@@ -27,7 +27,7 @@ class ROS_RobotManager(Node):
     def __init__(self, RM_conf: dict) -> None:
         super().__init__("Robot_spawn_manager_node")
         self.RM = RobotManager(RM_conf)
-        
+
         self.create_subscription(PoseStamped, "/ZeroGLab/Robots/SpawnFP", self.spawn_floating_platform, 1)
         self.create_subscription(String, "/ZeroGLab/Robots/Reset", self.reset_robot, 1)
         self.create_subscription(Empty, "/ZeroGLab/Robots/ResetAll", self.reset_robots, 1)
