@@ -26,7 +26,7 @@ docker pull nvcr.io/nvidia/isaac-sim:4.2.0
 On another terminal start the ROS2 humble docker.
 
 > [!TIP]
-> Build docker first by running `./docker.ros2_humble/build.sh`
+> Build the docker first by running `./docker.ros2_humble/build.sh`
 
 ```
 ./docker.ros2_humble/run.sh
