@@ -1,4 +1,4 @@
-# OMNI FPS
+![OMNIFPS_LOGO](data/omnifps.png) 
 Omniverse Floating Platform Simulator
 
 ## Installation
