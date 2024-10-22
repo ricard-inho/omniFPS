@@ -27,10 +27,8 @@ class ROS_RobotManager(Node):
     def __init__(self, RM_conf: dict) -> None:
         super().__init__("Robot_spawn_manager_node")
         self.RM = RobotManager(RM_conf)
-
-        self.create_subscription(PoseStamped, "/ZeroGLab/Robots/Spawn", self.spawn_robot, 1)
+        
         self.create_subscription(PoseStamped, "/ZeroGLab/Robots/SpawnFP", self.spawn_floating_platform, 1)
-        self.create_subscription(PoseStamped, "/ZeroGLab/Robots/Teleport", self.teleport_robot, 1)
         self.create_subscription(String, "/ZeroGLab/Robots/Reset", self.reset_robot, 1)
         self.create_subscription(Empty, "/ZeroGLab/Robots/ResetAll", self.reset_robots, 1)
         self.create_subscription(Float32MultiArray, "/ZeroGLab/Robots/Forward", self.apply_forces, 1)
@@ -108,40 +106,6 @@ class ROS_RobotManager(Node):
             ]
         )
         
-
-
-    def spawn_robot(self, data: PoseStamped) -> None:
-        """
-        Spawns a robot.
-
-        Args:
-            data (String): Name and path of the robot to spawn.
-                           Must be in the format: robot_name:usd_path
-        """
-
-        assert len(data.header.frame_id.split(":")) == 2, "The data should be in the format: robot_name:usd_path"
-        robot_name, usd_path = data.header.frame_id.split(":")
-        p = [data.pose.position.x, data.pose.position.y, data.pose.position.z]
-        q = [data.pose.orientation.w, data.pose.orientation.x, data.pose.orientation.y, data.pose.orientation.z]
-        self.modifications.append(
-            [
-                self.RM.add_robot,
-                {"usd_path": usd_path, "robot_name": robot_name, "p": p, "q": q, "domain_id": self.domain_id},
-            ]
-        )
-
-    def teleport_robot(self, data: PoseStamped) -> None:
-        """
-        Teleports a robot.
-
-        Args:
-            data (Pose): Pose in ROS2 Pose format.
-        """
-
-        robot_name = data.header.frame_id
-        p = [data.pose.position.x, data.pose.position.y, data.pose.position.z]
-        q = [data.pose.orientation.x, data.pose.orientation.y, data.pose.orientation.z, data.pose.orientation.w]
-        self.modifications.append([self.RM.teleport_robot, {"robot_name": robot_name, "position": p, "orientation": q}])
 
     def reset_robot(self, data: String) -> None:
         """

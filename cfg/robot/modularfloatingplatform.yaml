@@ -9,7 +9,7 @@ robots_settings:
       robot_name: FloatingPlatform
       usd_path: /workspace/zeroGlab/assets/USD_Assets/robots/FloatingPlatform.usd
       pose:
-        position: [-3.0, -2.0, 0.4]
+        position: [-1.5, -2.0, 0.3]
         orientation: [0, 0, 0, 1]
       domain_id: 0
       target_links: []

@@ -186,7 +186,7 @@ class ROS2_SimulationManager:
 
         # Preload the assets
         if cfg["robot"]["robots_settings"]["name"] == "FloatingPlatform":
-            self.ROSRobotManager.RM.preload_robot_at_pose(self.world, (0, 0, 0.4), (1, 0, 0, 0))
+            self.ROSRobotManager.RM.preload_robot_at_pose(self.world, cfg["robot"]["robots_settings"]["parameters"][0]["pose"]["position"], cfg["robot"]["robots_settings"]["parameters"][0]["pose"]["orientation"])
         else:
             self.ROSRobotManager.RM.preload_robot(self.world)
         self.ROSLabManager.FPLC.add_robot_manager(self.ROSRobotManager.RM)
