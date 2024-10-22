@@ -1,11 +1,20 @@
 # Floating Platform Lab Isaacsim ROS2 Humble
 
-# Run with ROS2 Humble
+## Run with ROS2 Humble
 
 Start simulation's docker
 
 > [!IMPORTANT]
-> Build docker first by running `./docker.zeroGlab/build.sh`
+> Generate your NGC [key](https://docs.nvidia.com/ngc/gpu-cloud/ngc-user-guide/index.html#generating-api-key).
+> More [info](https://catalog.ngc.nvidia.com/orgs/nvidia/containers/isaac-sim).
+
+```
+docker login nvcr.io
+Username: $oauthtoken
+Password: <Your Key>
+./docker.zeroGlab/build.sh
+```
+
 
 ```
 ./docker.zeroGlab/run.sh
@@ -20,5 +29,5 @@ On another terminal start the ROS2 humble docker.
 
 ```
 ./docker.ros2_humble/run.sh
-ros2 topic pub --once /ZeroGLab/Robots/SpawnFP geometry_msgs/msg/PoseStamped "{'header':{'stamp':{'sec':0.0,'nanosec':0.0},'frame_id':'FloatingPlatform'},pose:{'position':{'x':'10.0','y':10.0,'z': 1.0},'orientation':{'x':0.0,'y':0.0,'z':0.0,'w':1.0}}}"
+ros2 topic pub /AirBearingsSwitch std_msgs/Bool "data: true" -1
 ```
