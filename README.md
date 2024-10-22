@@ -1,8 +1,7 @@
-# Floating Platform Lab Isaacsim ROS2 Humble
+# OMNI FPS
+Omniverse Floating Platform Simulator
 
-## Run with ROS2 Humble
-
-Start simulation's docker
+## Installation
 
 > [!IMPORTANT]
 > Generate your NGC [key](https://docs.nvidia.com/ngc/gpu-cloud/ngc-user-guide/index.html#generating-api-key).
@@ -25,7 +24,7 @@ docker pull nvcr.io/nvidia/isaac-sim:4.2.0
 
 On another terminal start the ROS2 humble docker.
 
-> [!IMPORTANT]
+> [!TIP]
 > Build docker first by running `./docker.ros2_humble/build.sh`
 
 ```
