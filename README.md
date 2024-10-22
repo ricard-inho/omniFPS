@@ -12,6 +12,7 @@ Start simulation's docker
 docker login nvcr.io
 Username: $oauthtoken
 Password: <Your Key>
+docker pull nvcr.io/nvidia/isaac-sim:4.2.0
 ./docker.zeroGlab/build.sh
 ```
 
