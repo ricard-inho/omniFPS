@@ -7,6 +7,7 @@ __email__ = "antoine.richard@uni.lu"
 __status__ = "development"
 
 def startSim(cfg: dict):
+    import isaacsim
     from omni.isaac.kit import SimulationApp
     import omni
     # from src.environments.rendering import set_lens_flares, set_chromatic_aberrations, set_motion_blur
