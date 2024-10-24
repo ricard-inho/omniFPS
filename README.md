@@ -1,7 +1,8 @@
 ![OMNIFPS_LOGO](data/omnifps.png) 
 Omniverse Floating Platform Simulator
 
-## Installation
+## Setup Instructions
+### Obtaining the Isaac Sim Container
 
 > [!IMPORTANT]
 > Generate your NGC [key](https://docs.nvidia.com/ngc/gpu-cloud/ngc-user-guide/index.html#generating-api-key).
