@@ -1,5 +1,5 @@
 __author__ = "Antoine Richard, Junnosuke Kamohara"
-__copyright__ = "Copyright 2023-24, Space Robotics Lab, SnT, University of Luxembourg, SpaceR"
+__copyright__ = "Copyright 2024-25, Space Robotics Lab, SnT, University of Luxembourg, SpaceR"
 __license__ = "BSD 3-Clause"
 __version__ = "2.0.0"
 __maintainer__ = "Antoine Richard"
@@ -10,7 +10,7 @@ import omni
 
 from pxr import Usd
 
-from src.robots.robot import RobotManager
+from src.robots.robot_manager import RobotManager
 
 
 class BaseEnv:

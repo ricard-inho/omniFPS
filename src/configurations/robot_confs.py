@@ -1,5 +1,5 @@
 __author__ = "Antoine Richard, Ricard Marsal"
-__copyright__ = "Copyright 2023-24, Space Robotics Lab, SnT, University of Luxembourg, SpaceR"
+__copyright__ = "Copyright 2024-25, Space Robotics Lab, SnT, University of Luxembourg, SpaceR"
 __license__ = "BSD 3-Clause"
 __version__ = "2.0.0"
 __maintainer__ = "Ricard Marsal"
@@ -37,6 +37,7 @@ class RobotManagerConf:
     max_robots: int = 5
     robots_root: str = "/Robots"
     name: str = "MyRobot"
+    robot_type: str = "UniLuFP"
     parameters: List[RobotParameters] = field(default_factory=list)
 
     def __post_init__(self):

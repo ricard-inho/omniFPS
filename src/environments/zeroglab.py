@@ -1,5 +1,5 @@
 __author__ = "Antoine Richard, Junnosuke Kamohara, Ricard Marsal"
-__copyright__ = "Copyright 2023-24, Space Robotics Lab, SnT, University of Luxembourg, SpaceR"
+__copyright__ = "Copyright 2024-25, Space Robotics Lab, SnT, University of Luxembourg, SpaceR"
 __license__ = "BSD 3-Clause"
 __version__ = "2.0.0"
 __maintainer__ = "Ricard Marsal"
@@ -16,7 +16,7 @@ from pxr import UsdGeom, UsdLux, Gf, Usd, UsdPhysics
 
 from src.configurations.environments import ZeroGLabConf
 from src.environments.base_env import BaseEnv
-from src.robots.robot import RobotManager
+from src.robots.robot_manager import RobotManager
 from assets import get_assets_path
 
 
@@ -64,9 +64,10 @@ class ZeroGLabController(BaseEnv):
         #Move to correct location
         zero_g_lab_prim = stage.GetPrimAtPath(self.scene_name)
         zero_g_lab_xform = UsdGeom.Xformable(zero_g_lab_prim)
-        zero_g_lab_xform.AddTranslateOp().Set(Gf.Vec3d(-1.5, -2.5, 0))
-
-
+        
+        zero_g_lab_xform.AddTranslateOp().Set(Gf.Vec3d(2.5, -1.5, 0))
+        zero_g_lab_xform.AddRotateXYZOp().Set(Gf.Vec3d(0, 0, 90))
+        
         # Creates lights
         distant_light = UsdLux.DistantLight.Define(stage, "/Lights/sun")
         distant_light.GetIntensityAttr().Set(7000)

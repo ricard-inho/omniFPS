@@ -1,5 +1,5 @@
 __author__ = "Antoine Richard, Junnosuke Kamohara, Ricard Marsal"
-__copyright__ = "Copyright 2023-24, Space Robotics Lab, SnT, University of Luxembourg, SpaceR"
+__copyright__ = "Copyright 2024-25, Space Robotics Lab, SnT, University of Luxembourg, SpaceR"
 __license__ = "BSD 3-Clause"
 __version__ = "2.0.0"
 __maintainer__ = "Ricard Marsal"
@@ -34,232 +34,9 @@ from src.utils.pxr_utils import (
     setDefaultOpsTyped,
 )
 
-from src.configurations.robot_confs import RobotManagerConf
-from src.robots.articulations.modular_floating_platform import ModularFloatingPlatform
-from src.robots.articulations.views.modular_floating_platform_view import ModularFloatingPlatformView
-
-
-class RobotManager:
-    """
-    RobotManager class.
-    It allows to spawn, reset, teleport robots. It also allows to automatically add namespaces to topics,
-    and tfs to enable multi-robot operation."""
-
-    def __init__(
-        self,
-        RM_conf: RobotManagerConf,
-    ) -> None:
-        """
-        Args:
-            RM_conf (RobotManagerConf): The configuration of the robot manager.
-        """
-
-        self.stage = omni.usd.get_context().get_stage()
-        self.RM_conf = RobotManagerConf(**RM_conf)
-        self.robot_parameters = self.RM_conf.parameters
-        self.uses_nucleus = self.RM_conf.uses_nucleus
-        self.is_ROS2 = self.RM_conf.is_ROS2
-        self.max_robots = self.RM_conf.max_robots
-        self.robots_root = self.RM_conf.robots_root
-        createXform(self.stage, self.robots_root)
-        self.robots: Dict[str, Robot] = {}
-        self.robots_RG: Dict[str, RobotRigidGroup] = {}
-        self.num_robots = 0
-
-    def preload_robot(
-        self,
-        world: World,
-    ) -> None:
-        """
-        Preload the robots in the scene.
-        Args:
-            world (Usd.Stage): The usd stage scene.
-        """
-        if len(self.robot_parameters) > 0:
-            for robot_parameter in self.robot_parameters:
-                self.add_robot(
-                    robot_parameter.usd_path,
-                    robot_parameter.robot_name,
-                    robot_parameter.pose.position,
-                    robot_parameter.pose.orientation,
-                    robot_parameter.domain_id,
-                )
-                self.add_RRG(
-                    robot_parameter.robot_name,
-                    robot_parameter.target_links,
-                    world,
-                )
-
-    def preload_robot_at_pose(
-        self,
-        world: World,
-        position: Tuple[float, float, float],
-        orientation: Tuple[float, float, float, float],
-    ) -> None:
-        """
-        Preload the robots in the scene.
-        Args:
-            world (Usd.Stage): The usd stage scene.
-            position (Tuple[float, float, float]): The position of the robot. (x, y, z)
-            orientation (Tuple[float, float, float, float]): The orientation of the robot. (w, x, y, z)
-        """
-        if len(self.robot_parameters) > 0:
-            for robot_parameter in self.robot_parameters:
-                self.add_robot(
-                    robot_parameter.usd_path,
-                    robot_parameter.robot_name,
-                    position,
-                    orientation,
-                    robot_parameter.domain_id,
-                )
-                self.add_RRG(
-                    robot_parameter.robot_name,
-                    robot_parameter.target_links,
-                    world,
-                )
-
-    def add_floating_platform(
-        self,
-        robot_name: str = None,
-        p: Tuple[float, float, float] = [0, 0, 0],
-        q: Tuple[float, float, float, float] = [0, 0, 0, 1],
-        domain_id: int = None
-    ) -> None:
-        
-        """
-        Add floating platform to the scene
-
-        Args:
-            robot_name (str): The name of the robot.
-            p (Tuple[float, float, float]): The position of the robot. (x, y, z)
-            q (Tuple[float, float, float, float]): The orientation of the robot. (w, x, y, z)
-            domain_id (int): The domain id of the robot. Not required if the robot is not ROS2 enabled.
-        """
-        if robot_name[0] != "/":
-            robot_name = "/" + robot_name
-        if self.num_robots >= self.max_robots:
-            pass
-        if robot_name in self.robots.keys():
-            warnings.warn("Robot already exists. Ignoring request.")
-        else:
-            self.robots[robot_name] = Robot(
-                "/None",
-                robot_name,
-                is_on_nucleus=self.uses_nucleus,
-                is_ROS2=self.is_ROS2,
-                domain_id=domain_id,
-                robots_root=self.robots_root,
-            )
-
-            self.robots[robot_name].load_floating_platform(p,q)
-            self.num_robots += 1
-
-    def apply_forces(self, forces, positions, is_global: bool, robot_name: str = None,) -> None:
-        if robot_name[0] != "/":
-            robot_name = "/" + robot_name
-
-        if robot_name in self.robots.keys():
-            self.robots[robot_name].set_forces(forces, positions, is_global)
-        else:
-            warnings.warn("Robot doesn't exists. Ignoring request.")
-
-
-    def add_robot(
-        self,
-        usd_path: str = None,
-        robot_name: str = None,
-        p: Tuple[float, float, float] = [0, 0, 0],
-        q: Tuple[float, float, float, float] = [0, 0, 0, 1],
-        domain_id: int = None,
-    ) -> None:
-        """
-        Add a robot to the scene.
-
-        Args:
-            usd_path (str): The path of the robot's usd file.
-            robot_name (str): The name of the robot.
-            p (Tuple[float, float, float]): The position of the robot. (x, y, z)
-            q (Tuple[float, float, float, float]): The orientation of the robot. (w, x, y, z)
-            domain_id (int): The domain id of the robot. Not required if the robot is not ROS2 enabled.
-        """
-
-        if robot_name[0] != "/":
-            robot_name = "/" + robot_name
-        if self.num_robots >= self.max_robots:
-            pass
-        else:
-            if robot_name in self.robots.keys():
-                warnings.warn("Robot already exists. Ignoring request.")
-            else:
-                self.robots[robot_name] = Robot(
-                    usd_path,
-                    robot_name,
-                    is_on_nucleus=self.uses_nucleus,
-                    is_ROS2=self.is_ROS2,
-                    domain_id=domain_id,
-                    robots_root=self.robots_root,
-                )
-                self.robots[robot_name].load(p, q)
-                self.num_robots += 1
-
-    def add_RRG(
-        self,
-        robot_name: str = None,
-        target_links: List[str] = None,
-        world=None,
-    ) -> None:
-        """
-        Add a robot rigid group to the scene.
-
-        Args:
-            robot_name (str): The name of the robot.
-            target_links (List[str]): List of link names.
-            world (Usd.Stage): usd stage scene.
-        """
-        rrg = RobotRigidGroup(
-            self.robots_root,
-            robot_name,
-            target_links,
-        )
-        rrg.initialize(world)
-        self.robots_RG[robot_name] = rrg
-
-    def reset_robots(self) -> None:
-        """
-        Reset all the robots to their original position.
-        """
-
-        for robot in self.robots.keys():
-            self.robots[robot].reset()
-
-    def reset_robot(self, robot_name: str = None) -> None:
-        """
-        Reset a specific robot to its original position.
-
-        Args:
-            robot_name (str): The name of the robot.
-        """
-
-        if robot_name in self.robots.keys():
-            self.robots[robot_name].reset()
-        else:
-            warnings.warn("Robot does not exist. Ignoring request.")
-
-    def teleport_robot(
-        self, robot_name: str = None, position: np.ndarray = None, orientation: np.ndarray = None
-    ) -> None:
-        """
-        Teleport a specific robot to a specific position and orientation.
-
-        Args:
-            robot_name (str): The name of the robot.
-        """
-        if robot_name in self.robots.keys():
-            self.robots[robot_name].teleport(position, orientation)
-        else:
-            warnings.warn(f"Robot {robot_name} does not exist. Ignoring request.")
-            print("available robots: ", self.robots.keys())
-
+# from src.configurations.robot_confs import RobotManagerConf
+# from src.robots.articulations.modular_floating_platform import ModularFloatingPlatform
+# from src.robots.articulations.views.modular_floating_platform_view import ModularFloatingPlatformView
 
 class Robot:
     """
@@ -322,62 +99,62 @@ class Robot:
             if self.is_ROS2:
                 prim.GetAttribute("graph:variable:Context").Set(self.domain_id)
 
-    def load_floating_platform(self, position: np.ndarray, orientation: np.ndarray) -> None:
-        """
-        self.stage = omni.usd.get_context().get_stage()
-        self.set_reset_pose(position, orientation)
+    # def load_floating_platform(self, position: np.ndarray, orientation: np.ndarray) -> None:
+    #     """
+    #     self.stage = omni.usd.get_context().get_stage()
+    #     self.set_reset_pose(position, orientation)
 
-        position = Gf.Vec3d(position)
-        rotation = Gf.Quatd(orientation[0],orientation[1],orientation[2],orientation[3])
-        scale = Gf.Vec3d(1,1,1)
+    #     position = Gf.Vec3d(position)
+    #     rotation = Gf.Quatd(orientation[0],orientation[1],orientation[2],orientation[3])
+    #     scale = Gf.Vec3d(1,1,1)
 
-        prefix = "/Robot/FloatingPlatform"
-        obj_prim, prim_path = createXform(self.stage, prefix)
-        xform = UsdGeom.Xformable(obj_prim)
-        addDefaultOps(xform)
-        setDefaultOpsTyped(xform, position, rotation, scale)
+    #     prefix = "/Robot/FloatingPlatform"
+    #     obj_prim, prim_path = createXform(self.stage, prefix)
+    #     xform = UsdGeom.Xformable(obj_prim)
+    #     addDefaultOps(xform)
+    #     setDefaultOpsTyped(xform, position, rotation, scale)
 
-        cylinder_path = prim_path + "/Cylinder"
-        cylinder_prim = UsdGeom.Cylinder.Define(self.stage, cylinder_path)
-        cylinder_prim.CreateRadiusAttr(0.25)
-        cylinder_prim.CreateHeightAttr(0.5)
-        cylinder_xform = UsdGeom.Xformable(cylinder_prim)
-        cylinder_xform.AddTranslateOp().Set(Gf.Vec3d(0, 0, 0))
-        cylinder_xform.AddRotateXYZOp().Set(Gf.Vec3f(0, 0, 0))
-        cylinder_xform.AddScaleOp().Set(Gf.Vec3f(1, 1, 1))
-        UsdPhysics.RigidBodyAPI.Apply(cylinder_prim.GetPrim())
-        UsdPhysics.CollisionAPI.Apply(cylinder_prim.GetPrim())
-        mass_api = UsdPhysics.MassAPI.Apply(cylinder_prim.GetPrim())
-        mass_api.CreateMassAttr().Set(5.0)
-        mass_api.CreateCenterOfMassAttr().Set(Gf.Vec3d([0, 0, 0]))
-        # obj_prim.GetReferences().AddReference(path)
-        # obj_prim.SetInstanceable(True)
-        """
+    #     cylinder_path = prim_path + "/Cylinder"
+    #     cylinder_prim = UsdGeom.Cylinder.Define(self.stage, cylinder_path)
+    #     cylinder_prim.CreateRadiusAttr(0.25)
+    #     cylinder_prim.CreateHeightAttr(0.5)
+    #     cylinder_xform = UsdGeom.Xformable(cylinder_prim)
+    #     cylinder_xform.AddTranslateOp().Set(Gf.Vec3d(0, 0, 0))
+    #     cylinder_xform.AddRotateXYZOp().Set(Gf.Vec3f(0, 0, 0))
+    #     cylinder_xform.AddScaleOp().Set(Gf.Vec3f(1, 1, 1))
+    #     UsdPhysics.RigidBodyAPI.Apply(cylinder_prim.GetPrim())
+    #     UsdPhysics.CollisionAPI.Apply(cylinder_prim.GetPrim())
+    #     mass_api = UsdPhysics.MassAPI.Apply(cylinder_prim.GetPrim())
+    #     mass_api.CreateMassAttr().Set(5.0)
+    #     mass_api.CreateCenterOfMassAttr().Set(Gf.Vec3d([0, 0, 0]))
+    #     # obj_prim.GetReferences().AddReference(path)
+    #     # obj_prim.SetInstanceable(True)
+    #     """
 
-        with open("cfg/robot/modularfloatingplatform.yaml", "r") as file:
-            cfg = yaml.safe_load(file)
+    #     with open("cfg/robot/modularfloatingplatform.yaml", "r") as file:
+    #         cfg = yaml.safe_load(file)
 
-        name = cfg["robots_settings"]["name"]
-        fp = ModularFloatingPlatform(
-            f"/Robots/{name}", 
-            cfg=cfg, 
-            translation=[position],
-            orientation=[orientation[1], orientation[2], orientation[3], orientation[0]]
-        )
+    #     name = cfg["robots_settings"]["name"]
+    #     fp = ModularFloatingPlatform(
+    #         f"/Robots/{name}", 
+    #         cfg=cfg, 
+    #         translation=[position],
+    #         orientation=[orientation[1], orientation[2], orientation[3], orientation[0]]
+    #     )
         
-        root_path = f"/Robots/{name}"
-        self.platform = ModularFloatingPlatformView(
-            prim_paths_expr=root_path,
-            name="modular_floating_platform_view",
-            track_contact_force=True,
-        )
+    #     root_path = f"/Robots/{name}"
+    #     self.platform = ModularFloatingPlatformView(
+    #         prim_paths_expr=root_path,
+    #         name="modular_floating_platform_view",
+    #         track_contact_force=True,
+    #     )
 
-        stage = omni.usd.get_context().get_stage()
-        world = World(stage)
-        world.reset()
-        self.platform.initialize()
-        world.scene.add(self.platform)
-        world.reset()
+    #     stage = omni.usd.get_context().get_stage()
+    #     world = World(stage)
+    #     world.reset()
+    #     self.platform.initialize()
+    #     world.scene.add(self.platform)
+    #     world.reset()
 
 
     def set_forces(self, forces, positions, is_global: bool) -> None:
@@ -470,7 +247,6 @@ class Robot:
             p (list): The position of the robot.
             q (list): The orientation of the robot. (x, y, z, w)
         """
-
         self.get_root_rigid_body_path()
         transform = _dynamic_control.Transform(p, q)
         self.dc.set_rigid_body_pose(self.root_body_id, transform)

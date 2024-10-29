@@ -1,6 +1,6 @@
 
 __author__ = "Antoine Richard, Junnosuke Kamohara, Ricard Marsal"
-__copyright__ = "Copyright 2023-24, Space Robotics Lab, SnT, University of Luxembourg, SpaceR"
+__copyright__ = "Copyright 2024-25, Space Robotics Lab, SnT, University of Luxembourg, SpaceR"
 __license__ = "BSD 3-Clause"
 __version__ = "2.0.0"
 __maintainer__ = "Ricard Marsal"
@@ -187,11 +187,17 @@ class ROS2_SimulationManager:
         # Preload the assets
         if cfg["robot"]["robots_settings"]["name"] == "FloatingPlatform":
             self.ROSRobotManager.RM.preload_robot(self.world)
-            self.ROSRobotManager.RM.teleport_robot(
-                robot_name= "/FloatingPlatform",
-                position= cfg["robot"]["robots_settings"]["parameters"][0]["pose"]["position"],
+            self.ROSRobotManager.RM.set_dof_pos(
+                robot_name="/FloatingPlatform", 
+                function_name="set_dof_pos", 
+                position=cfg["robot"]["robots_settings"]["parameters"][0]["pose"]["position"],
                 orientation= cfg["robot"]["robots_settings"]["parameters"][0]["pose"]["orientation"]
             )
+            # self.ROSRobotManager.RM.teleport_robot(
+            #     robot_name= "/FloatingPlatform",
+            #     position= cfg["robot"]["robots_settings"]["parameters"][0]["pose"]["position"],
+            #     orientation= cfg["robot"]["robots_settings"]["parameters"][0]["pose"]["orientation"]
+            # )
 
         self.ROSLabManager.FPLC.add_robot_manager(self.ROSRobotManager.RM)
 

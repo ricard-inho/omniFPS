@@ -4,12 +4,13 @@ robots_settings:
   max_robots: 1
   robots_root: "/Robots"
   name: FloatingPlatform
+  robot_type: UniLuFP
   parameters:
     -
       robot_name: FloatingPlatform
       usd_path: /workspace/zeroGlab/assets/USD_Assets/robots/FloatingPlatform.usd
       pose:
-        position: [-1.5, -2.0, 0.3]
+        position: [0.0, 0.0, 0.3]
         orientation: [0, 0, 0, 1]
       domain_id: 0
       target_links: []
