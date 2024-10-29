@@ -204,6 +204,7 @@ class ROS2_SimulationManager:
         for i in range(100):
             self.world.step(render=True)
         self.world.reset()
+        self.ROSRobotManager.reset()
 
     def run_simulation(self) -> None:
         """
@@ -211,9 +212,20 @@ class ROS2_SimulationManager:
         """
 
         self.timeline.play()
+        self.world.reset() 
+        self.ROSLabManager.reset()
+        self.ROSRobotManager.reset()
+
+        prev_state = None
         while self.simulation_app.is_running():
             self.rate.reset()
             self.world.step(render=True)
+            current_state = self.world.is_playing()
+            if current_state and not prev_state:
+                # If transitioning from stopped to playing, reset
+                self.ROSRobotManager.reset()
+                self.ROSLabManager.reset()
+            prev_state = current_state
             if self.world.is_playing():
                 # Apply modifications to the lab only once the simulation step is finished
                 # This is extremely important as modifying the stage during a simulation step
@@ -228,10 +240,7 @@ class ROS2_SimulationManager:
                     self.ROSRobotManager.reset()
                     self.ROSLabManager.trigger_reset = False
                 self.ROSRobotManager.apply_modifications()
-                # if self.enable_deformation:
-                #     if self.world.current_time_step_index >= (self.deform_delay * self.world.get_physics_dt()):
-                #         self.ROSLabManager.LC.deform_terrain()
-                        # self.ROSLabManager.LC.applyTerramechanics()
+
             if not self.ROSLabManager.monitor_thread_is_alive():
                 logger.debug("Destroying the ROS nodes")
                 self.ROSLabManager.destroy_node()

@@ -245,7 +245,6 @@ class RobotManager:
         """
         Reset all the robots to their original position.
         """
-
         for robot in self.robots.keys():
             self.robots[robot].reset()
 

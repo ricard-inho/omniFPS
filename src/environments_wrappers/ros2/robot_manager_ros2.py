@@ -43,6 +43,7 @@ class ROS_RobotManager(Node):
 
         self.clear_modifications()
         self.reset_robots(Empty())
+        self.RM.reset_robots()
 
     def clear_modifications(self) -> None:
         """
