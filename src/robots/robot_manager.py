@@ -276,22 +276,18 @@ class RobotManager:
             warnings.warn(f"Robot {robot_name} does not exist. Ignoring request.")
             print("available robots: ", self.robots.keys())
 
-    def apply_thrusters_forces(self, robot_name: str=None, function_name: str=None)-> None:
+    def custom_funct(self, robot_name:str=None, function_name:str=None,  *args, **kwargs)-> None:
         if robot_name in self.robots.keys():
             robot = self.robots.get(robot_name)
             if robot and hasattr(robot, function_name):
-                getattr(robot, function_name)()
-            else:
-                print(f"{robot_name} does not have the function {function_name}")
-        else:
-            warnings.warn(f"Robot {robot_name} does not exist. Ignoring request.")
-            print("available robots: ", self.robots.keys())
-
-    def set_dof_pos(self, robot_name:str=None, function_name:str=None)-> None:
-        if robot_name in self.robots.keys():
-            robot = self.robots.get(robot_name)
-            if robot and hasattr(robot, function_name):
-                getattr(robot, function_name)()
+                func = getattr(robot, function_name)
+                if callable(func):
+                    try:
+                        func(*args, **kwargs)
+                    except TypeError as e:
+                        print(f"Error calling {function_name} on {robot_name}: {e}")
+                else:
+                    print(f"{function_name} on {robot_name} is not callable.")
             else:
                 print(f"{robot_name} does not have the function {function_name}")
         else:

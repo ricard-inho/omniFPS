@@ -194,7 +194,7 @@ class ROS2_SimulationManager:
             robots_xform.AddRotateXYZOp().Set(Gf.Vec3d(0, 0, 180))
 
             self.ROSRobotManager.RM.preload_robot(self.world)
-            self.ROSRobotManager.RM.set_dof_pos(
+            self.ROSRobotManager.RM.custom_funct(
                 robot_name="/FloatingPlatform", 
                 function_name="set_dof_pos"
             )
