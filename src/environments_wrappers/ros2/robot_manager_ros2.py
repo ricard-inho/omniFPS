@@ -6,7 +6,7 @@ __maintainer__ = "Ricard Marsal"
 __email__ = "ricard.marsal@uni.lu"
 __status__ = "development"
 
-from typing import List, Tuple
+from typing import List, Tuple, Dict
 
 from pxr import Gf
 
@@ -28,13 +28,13 @@ class ROS_RobotManager(Node):
         super().__init__("Robot_spawn_manager_node")
         self.RM = RobotManager(RM_conf)
 
-        self.create_subscription(PoseStamped, "/ZeroGLab/Robots/SpawnFP", self.spawn_floating_platform, 1)
-        self.create_subscription(String, "/ZeroGLab/Robots/Reset", self.reset_robot, 1)
-        self.create_subscription(Empty, "/ZeroGLab/Robots/ResetAll", self.reset_robots, 1)
-        self.create_subscription(Float32MultiArray, "/ZeroGLab/Robots/Forward", self.apply_forces, 1)
+        self.create_subscription(String, "/omniFPS/Robots/Reset", self.reset_robot, 1)
+        self.create_subscription(Empty, "/omniFPS/Robots/ResetAll", self.reset_robots, 1)
+        self.create_subscription(Float32MultiArray, "/omniFPS/Robots/FloatingPlatform/thrusters/input", self.set_robot_forces, 1)
 
         self.domain_id = 0
         self.modifications: List[Tuple[callable, dict]] = []
+        self.persistent_modifications: Dict[str, dict] = {}
 
     def reset(self) -> None:
         """
@@ -51,6 +51,7 @@ class ROS_RobotManager(Node):
         """
 
         self.modifications: List[Tuple[callable, dict]] = []
+        # self.persistent_modifications.clear()
 
     def apply_modifications(self) -> None:
         """
@@ -59,54 +60,11 @@ class ROS_RobotManager(Node):
 
         for mod in self.modifications:
             mod[0](**mod[1])
-        self.clear_modifications()
 
-    def spawn_floating_platform(self, data: PoseStamped) -> None:
-        """
-        Spawns floating platform w/o usd
+        for mod in self.persistent_modifications.values():
+            self.RM.custom_funct(**mod)
 
-        Args:
-            data (String): Name and path of the robot to spawn.
-                           Must be in the format: robot_name
-        """
-        robot_name, usd_path = data.header.frame_id.split(":")
-        p = [data.pose.position.x, data.pose.position.y, data.pose.position.z]
-        q = [data.pose.orientation.w, data.pose.orientation.x, data.pose.orientation.y, data.pose.orientation.z]
-        self.modifications.append(
-            [
-                self.RM.add_floating_platform,
-                {"robot_name": robot_name, "p": p, "q": q, "domain_id": self.domain_id}
-            ]
-        )
-
-
-    def apply_forces(self, data: Float32MultiArray) -> None:
-
-        received_array = data.data
-        forces = [
-            [-0.5, 0.0, 0.0] if value == 1.0 and (i % 2 == 1) else
-            [0.5, 0.0, 0.0] if value == 1.0 else
-            [0.0, 0.0, 0.0]
-            for i, value in enumerate(received_array)
-        ]
-
-        positions = [
-            [0.0, 0.31, 0.0],
-            [0.0, 0.31, 0.0],
-            [0.0, -0.31, 0.0],
-            [0.0, -0.31, 0.0],
-        ]
-
-        is_global = True
-        robot_name="FloatingPlatform"
-
-        self.modifications.append(
-            [
-                self.RM.apply_forces,
-                {"forces": forces, "positions": positions, "is_global": is_global, "robot_name": robot_name}
-            ]
-        )
-        
+        self.clear_modifications()        
 
     def reset_robot(self, data: String) -> None:
         """
@@ -134,3 +92,17 @@ class ROS_RobotManager(Node):
         Cleans the robots."""
 
         self.destroy_node()
+
+    def set_robot_forces(self, data: Float32MultiArray) -> None:
+        """
+        Sets forces for a specific robot and stores it in `last_forces_command`.
+        """
+        robot_name = "/FloatingPlatform"
+        forces = data 
+        
+        # Use custom_funct to set last forces on the specified robot
+        self.RM.custom_funct(robot_name, "set_forces_command", forces=forces)
+        
+        # Schedule force application for the robot in the modifications list
+        self.modifications.append([self.RM.custom_funct, {"robot_name": robot_name, "function_name": "apply_forces_command"}])
+        self.persistent_modifications[robot_name] = {"robot_name": robot_name, "function_name": "apply_forces_command"}

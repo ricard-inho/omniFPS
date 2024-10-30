@@ -195,6 +195,10 @@ class ROS2_SimulationManager:
 
             self.ROSRobotManager.RM.preload_robot(self.world)
             self.ROSRobotManager.RM.custom_funct(
+                robot_name="/FloatingPlatform",
+                function_name="define_articulations"
+            )
+            self.ROSRobotManager.RM.custom_funct(
                 robot_name="/FloatingPlatform", 
                 function_name="set_dof_pos"
             )
@@ -221,11 +225,14 @@ class ROS2_SimulationManager:
             self.rate.reset()
             self.world.step(render=True)
             current_state = self.world.is_playing()
+
             if current_state and not prev_state:
                 # If transitioning from stopped to playing, reset
                 self.ROSRobotManager.reset()
                 self.ROSLabManager.reset()
+
             prev_state = current_state
+            
             if self.world.is_playing():
                 # Apply modifications to the lab only once the simulation step is finished
                 # This is extremely important as modifying the stage during a simulation step

@@ -11,6 +11,8 @@ from src.robots.robot import Robot
 import numpy as np
 from pxr import Gf
 import omni.isaac.dynamic_control as dc_module
+from std_msgs.msg import Float32MultiArray
+from typing import List
 
 class UniLuFP(Robot):
     def __init__(self, usd_path, robot_name, robots_root, is_on_nucleus, is_ROS2, domain_id):
@@ -23,123 +25,96 @@ class UniLuFP(Robot):
             domain_id= domain_id,
         )
 
-    def apply_thrusters_forces(self):
-        pass
+        #Forces to apply to the thrusters 
+        self.forces_command = None
+        
+        self.thrusters_directions = [
+            (-1, 1),    # Thruster 0
+            (1, -1),    # Thruster 1
+            (-1, -1),     # Thruster 2
+            (1, 1),   # Thruster 3
+            (1, -1),    # Thruster 4
+            (-1, 1),    # Thruster 5
+            (1, 1),   # Thruster 6
+            (-1, -1)      # Thruster 7
+        ]
+        #Thruster position
+        self.thrusters_pos = [
+            [0.155, 0.155, 0.0],    # Thruster 0,1
+            [-0.155, 0.155, 0.0],   # Thruster 2,3
+            [-0.155, -0.155, 0.0],  # Thruster 4,5
+            [0.155, -0.155, 0.0]    # Thruster 6,7
+        ]
+
+    def define_articulations(self)->None:
+        self.articulation = self.dc.get_articulation("/Robots/FloatingPlatform")
+        #Joints
+        self.dof_ptr_x = self.dc.find_articulation_dof(self.articulation, "fp_world_joint_x")
+        self.dof_ptr_y = self.dc.find_articulation_dof(self.articulation, "fp_world_joint_y")
+        self.dof_ptr_z = self.dc.find_articulation_dof(self.articulation, "fp_world_joint_z")
+        #Thrusters
+        self.v_thruster_0 = self.dc.find_articulation_body(self.articulation, "v_thruster_0")
+        self.v_thruster_1 = self.dc.find_articulation_body(self.articulation, "v_thruster_1")
+        self.v_thruster_2 = self.dc.find_articulation_body(self.articulation, "v_thruster_2")
+        self.v_thruster_3 = self.dc.find_articulation_body(self.articulation, "v_thruster_3")
+        self.v_thruster_4 = self.dc.find_articulation_body(self.articulation, "v_thruster_4")
+        self.v_thruster_5 = self.dc.find_articulation_body(self.articulation, "v_thruster_5")
+        self.v_thruster_6 = self.dc.find_articulation_body(self.articulation, "v_thruster_6")
+        self.v_thruster_7 = self.dc.find_articulation_body(self.articulation, "v_thruster_7")
+        
 
     def set_dof_pos(self)->None:
         """
         Sets the position and velocity of degrees of freedom (DOFs) for the FloatingPlatform articulation.
         """
-        art = self.dc.get_articulation("/Robots/FloatingPlatform")
+        self.dc.set_dof_position(self.dof_ptr_x, 2.5)
+        self.dc.set_dof_position(self.dof_ptr_y, -1)
+        self.dc.set_dof_position(self.dof_ptr_z, 0.0)
 
-        dof_ptr_x = self.dc.find_articulation_dof(art, "fp_world_joint_x")
-        dof_ptr_y = self.dc.find_articulation_dof(art, "fp_world_joint_y")
-        dof_ptr_z = self.dc.find_articulation_dof(art, "fp_world_joint_z")
-
-        self.dc.set_dof_position(dof_ptr_x, 2.5)
-        self.dc.set_dof_position(dof_ptr_y, -1)
-        self.dc.set_dof_position(dof_ptr_z, 0.3)
-
-        self.dc.set_dof_velocity(dof_ptr_x, 0.0)
-        self.dc.set_dof_velocity(dof_ptr_y, 0.0)
-        self.dc.set_dof_velocity(dof_ptr_z, 0.0)
+        self.dc.set_dof_velocity(self.dof_ptr_x, 0.0)
+        self.dc.set_dof_velocity(self.dof_ptr_y, 0.0)
+        self.dc.set_dof_velocity(self.dof_ptr_z, 0.0)
 
     def reset(self) -> None:
         """
         Reset the robot to its original position and orientation.
         """
         self.set_dof_pos()
-
-    # def load_floating_platform(self, position: np.ndarray, orientation: np.ndarray) -> None:
-    #     """
-    #     self.stage = omni.usd.get_context().get_stage()
-    #     self.set_reset_pose(position, orientation)
-
-    #     position = Gf.Vec3d(position)
-    #     rotation = Gf.Quatd(orientation[0],orientation[1],orientation[2],orientation[3])
-    #     scale = Gf.Vec3d(1,1,1)
-
-    #     prefix = "/Robot/FloatingPlatform"
-    #     obj_prim, prim_path = createXform(self.stage, prefix)
-    #     xform = UsdGeom.Xformable(obj_prim)
-    #     addDefaultOps(xform)
-    #     setDefaultOpsTyped(xform, position, rotation, scale)
-
-    #     cylinder_path = prim_path + "/Cylinder"
-    #     cylinder_prim = UsdGeom.Cylinder.Define(self.stage, cylinder_path)
-    #     cylinder_prim.CreateRadiusAttr(0.25)
-    #     cylinder_prim.CreateHeightAttr(0.5)
-    #     cylinder_xform = UsdGeom.Xformable(cylinder_prim)
-    #     cylinder_xform.AddTranslateOp().Set(Gf.Vec3d(0, 0, 0))
-    #     cylinder_xform.AddRotateXYZOp().Set(Gf.Vec3f(0, 0, 0))
-    #     cylinder_xform.AddScaleOp().Set(Gf.Vec3f(1, 1, 1))
-    #     UsdPhysics.RigidBodyAPI.Apply(cylinder_prim.GetPrim())
-    #     UsdPhysics.CollisionAPI.Apply(cylinder_prim.GetPrim())
-    #     mass_api = UsdPhysics.MassAPI.Apply(cylinder_prim.GetPrim())
-    #     mass_api.CreateMassAttr().Set(5.0)
-    #     mass_api.CreateCenterOfMassAttr().Set(Gf.Vec3d([0, 0, 0]))
-    #     # obj_prim.GetReferences().AddReference(path)
-    #     # obj_prim.SetInstanceable(True)
-    #     """
-
-    #     with open("cfg/robot/modularfloatingplatform.yaml", "r") as file:
-    #         cfg = yaml.safe_load(file)
-
-    #     name = cfg["robots_settings"]["name"]
-    #     fp = ModularFloatingPlatform(
-    #         f"/Robots/{name}", 
-    #         cfg=cfg, 
-    #         translation=[position],
-    #         orientation=[orientation[1], orientation[2], orientation[3], orientation[0]]
-    #     )
         
-    #     root_path = f"/Robots/{name}"
-    #     self.platform = ModularFloatingPlatformView(
-    #         prim_paths_expr=root_path,
-    #         name="modular_floating_platform_view",
-    #         track_contact_force=True,
-    #     )
 
-    #     stage = omni.usd.get_context().get_stage()
-    #     world = World(stage)
-    #     world.reset()
-    #     self.platform.initialize()
-    #     world.scene.add(self.platform)
-    #     world.reset()
+    def set_forces_command(self, forces: Float32MultiArray) -> None:
+        """
+        Sets the last forces to apply to the robot.
+        """
+        self.forces_command = forces
 
+    def apply_forces_command(self) -> None:
+        """
+        Applies the last set forces to the robot's thrusters.
+        """
+        if self.forces_command:
+            if self.forces_command.data[0] == 1: #Air bearing
+                forces = self._map_forces(commands=self.forces_command.data[1:]) 
+                self.dc.apply_body_force(self.v_thruster_0, forces[0], self.thrusters_pos[0], False)
+                self.dc.apply_body_force(self.v_thruster_1, forces[1], self.thrusters_pos[0], False)
+                self.dc.apply_body_force(self.v_thruster_2, forces[2], self.thrusters_pos[1], False)
+                self.dc.apply_body_force(self.v_thruster_3, forces[3], self.thrusters_pos[1], False)
+                self.dc.apply_body_force(self.v_thruster_4, forces[4], self.thrusters_pos[2], False)
+                self.dc.apply_body_force(self.v_thruster_5, forces[5], self.thrusters_pos[2], False)
+                self.dc.apply_body_force(self.v_thruster_6, forces[6], self.thrusters_pos[3], False)
+                self.dc.apply_body_force(self.v_thruster_7, forces[7], self.thrusters_pos[3], False)
+        else:
+            print("Forces Not defined")
 
-    # def set_forces(self, forces, positions, is_global: bool) -> None:
-
-    #     articulation = self.dc.get_articulation("/Robots/FloatingPlatform")
-
-    #     v_thruster_0 = self.dc.find_articulation_body(articulation, "v_thruster_0")
-    #     force_vector = forces[0]
-    #     position = positions[0] 
-    #     success = self.dc.apply_body_force(v_thruster_0, force_vector, position, False)
-    #     print(f"Thruster 0-> Force: {force_vector}, position: {position}")
-
-    #     v_thruster_1 = self.dc.find_articulation_body(articulation, "v_thruster_1")
-    #     force_vector = forces[1] 
-    #     position = positions[1] 
-    #     success = self.dc.apply_body_force(v_thruster_1, force_vector, position, False)
-    #     print(f"Thruster 1-> Force: {force_vector}, position: {position}")
-
-    #     v_thruster_2 = self.dc.find_articulation_body(articulation, "v_thruster_2")
-    #     force_vector = forces[2]
-    #     position = positions[2] 
-    #     success = self.dc.apply_body_force(v_thruster_2, force_vector, position, False)
-    #     print(f"Thruster 2-> Force: {force_vector}, position: {position}")
-
-    #     v_thruster_3 = self.dc.find_articulation_body(articulation, "v_thruster_3")
-    #     force_vector = forces[3] 
-    #     position = positions[3]
-    #     success = self.dc.apply_body_force(v_thruster_3, force_vector, position, False)
-    #     print(f"Thruster 3-> Force: {force_vector}, position: {position}")
-
-    #     print("##########################################################################check local frame")
-
-    #     # self.platform.thrusters.apply_forces_and_torques_at_pos(
-    #     #     forces=forces, positions=positions, is_global=is_global
-        # )
-
-        
+    def _map_forces(self, commands)->List:
+        forces = []
+        num_open_thrusters = max(commands.count(1), 1) #Aboids division by 0
+        for i, force in enumerate(commands):
+            forces.append(
+                [
+                    force * (1/num_open_thrusters) * self.thrusters_directions[i][0], 
+                    force * (1/num_open_thrusters) * self.thrusters_directions[i][1], 
+                    0.0
+                ]
+            )
+        return forces
