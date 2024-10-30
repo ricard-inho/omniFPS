@@ -12,6 +12,7 @@ from threading import Thread
 
 from omni.isaac.kit import SimulationApp
 from omni.isaac.core import World
+from pxr import UsdGeom, Gf
 from typing import Union
 import logging
 import omni
@@ -186,25 +187,24 @@ class ROS2_SimulationManager:
 
         # Preload the assets
         if cfg["robot"]["robots_settings"]["name"] == "FloatingPlatform":
+            stage = omni.usd.get_context().get_stage()
+            robots_prim = stage.GetPrimAtPath("/Robots")
+            robots_xform = UsdGeom.Xformable(robots_prim)
+            robots_xform.ClearXformOpOrder()
+            robots_xform.AddRotateXYZOp().Set(Gf.Vec3d(0, 0, 180))
+
             self.ROSRobotManager.RM.preload_robot(self.world)
             self.ROSRobotManager.RM.set_dof_pos(
                 robot_name="/FloatingPlatform", 
-                function_name="set_dof_pos", 
-                position=cfg["robot"]["robots_settings"]["parameters"][0]["pose"]["position"],
-                orientation= cfg["robot"]["robots_settings"]["parameters"][0]["pose"]["orientation"]
+                function_name="set_dof_pos"
             )
-            # self.ROSRobotManager.RM.teleport_robot(
-            #     robot_name= "/FloatingPlatform",
-            #     position= cfg["robot"]["robots_settings"]["parameters"][0]["pose"]["position"],
-            #     orientation= cfg["robot"]["robots_settings"]["parameters"][0]["pose"]["orientation"]
-            # )
 
         self.ROSLabManager.FPLC.add_robot_manager(self.ROSRobotManager.RM)
 
-        for i in range(100):
-            self.world.step(render=True)
-        self.world.reset()
-        self.ROSRobotManager.reset()
+        # for i in range(100):
+        #     self.world.step(render=True)
+        # self.world.reset()
+        # self.ROSRobotManager.reset()
 
     def run_simulation(self) -> None:
         """

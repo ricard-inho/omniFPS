@@ -287,11 +287,11 @@ class RobotManager:
             warnings.warn(f"Robot {robot_name} does not exist. Ignoring request.")
             print("available robots: ", self.robots.keys())
 
-    def set_dof_pos(self, robot_name:str=None, function_name:str=None, position:np.ndarray=None, orientation:np.ndarray=None)-> None:
+    def set_dof_pos(self, robot_name:str=None, function_name:str=None)-> None:
         if robot_name in self.robots.keys():
             robot = self.robots.get(robot_name)
             if robot and hasattr(robot, function_name):
-                getattr(robot, function_name)(position, orientation)
+                getattr(robot, function_name)()
             else:
                 print(f"{robot_name} does not have the function {function_name}")
         else:

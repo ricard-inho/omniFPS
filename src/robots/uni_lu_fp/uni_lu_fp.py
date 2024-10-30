@@ -26,15 +26,18 @@ class UniLuFP(Robot):
     def apply_thrusters_forces(self):
         pass
 
-    def set_dof_pos(self, position:np.ndarray=None, orientation:np.ndarray=None)->None:
+    def set_dof_pos(self)->None:
+        """
+        Sets the position and velocity of degrees of freedom (DOFs) for the FloatingPlatform articulation.
+        """
         art = self.dc.get_articulation("/Robots/FloatingPlatform")
 
         dof_ptr_x = self.dc.find_articulation_dof(art, "fp_world_joint_x")
         dof_ptr_y = self.dc.find_articulation_dof(art, "fp_world_joint_y")
         dof_ptr_z = self.dc.find_articulation_dof(art, "fp_world_joint_z")
 
-        self.dc.set_dof_position(dof_ptr_x, 2.0)
-        self.dc.set_dof_position(dof_ptr_y, -1.5)
+        self.dc.set_dof_position(dof_ptr_x, 2.5)
+        self.dc.set_dof_position(dof_ptr_y, -1)
         self.dc.set_dof_position(dof_ptr_z, 0.3)
 
         self.dc.set_dof_velocity(dof_ptr_x, 0.0)
@@ -42,8 +45,10 @@ class UniLuFP(Robot):
         self.dc.set_dof_velocity(dof_ptr_z, 0.0)
 
     def reset(self) -> None:
-        print(f"reset pos {self.reset_position}")
-        self.set_dof_pos(position=self.reset_position)
+        """
+        Reset the robot to its original position and orientation.
+        """
+        self.set_dof_pos()
 
     # def load_floating_platform(self, position: np.ndarray, orientation: np.ndarray) -> None:
     #     """
