@@ -232,7 +232,7 @@ class ROS2_SimulationManager:
                 self.ROSLabManager.reset()
 
             prev_state = current_state
-            
+
             if self.world.is_playing():
                 # Apply modifications to the lab only once the simulation step is finished
                 # This is extremely important as modifying the stage during a simulation step

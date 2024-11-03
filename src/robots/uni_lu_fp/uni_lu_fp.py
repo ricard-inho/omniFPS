@@ -29,14 +29,14 @@ class UniLuFP(Robot):
         self.forces_command = None
         
         self.thrusters_directions = [
-            (-1, 1),    # Thruster 0
-            (1, -1),    # Thruster 1
-            (-1, -1),     # Thruster 2
-            (1, 1),   # Thruster 3
-            (1, -1),    # Thruster 4
-            (-1, 1),    # Thruster 5
-            (1, 1),   # Thruster 6
-            (-1, -1)      # Thruster 7
+            (-1, 1),   # Thruster 0
+            (1, -1),   # Thruster 1
+            (-1, -1),  # Thruster 2
+            (1, 1),    # Thruster 3
+            (1, -1),   # Thruster 4
+            (-1, 1),   # Thruster 5
+            (1, 1),    # Thruster 6
+            (-1, -1)   # Thruster 7
         ]
         #Thruster position
         self.thrusters_pos = [
@@ -82,19 +82,19 @@ class UniLuFP(Robot):
         self.set_dof_pos()
         
 
-    def set_forces_command(self, forces: Float32MultiArray) -> None:
+    def set_forces_command(self, comanded_forces: List) -> None:
         """
         Sets the last forces to apply to the robot.
         """
-        self.forces_command = forces
+        self.forces_command = comanded_forces
 
     def apply_forces_command(self) -> None:
         """
         Applies the last set forces to the robot's thrusters.
         """
         if self.forces_command:
-            if self.forces_command.data[0] == 1: #Air bearing
-                forces = self._map_forces(commands=self.forces_command.data[1:]) 
+            if self.forces_command[0] == 1: #Air bearing
+                forces = self._map_forces(commands=self.forces_command[1:]) 
                 self.dc.apply_body_force(self.v_thruster_0, forces[0], self.thrusters_pos[0], False)
                 self.dc.apply_body_force(self.v_thruster_1, forces[1], self.thrusters_pos[0], False)
                 self.dc.apply_body_force(self.v_thruster_2, forces[2], self.thrusters_pos[1], False)

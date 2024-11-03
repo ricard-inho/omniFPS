@@ -10,8 +10,8 @@ from typing import List, Tuple, Dict
 
 from pxr import Gf
 
-from std_msgs.msg import String, Empty, Float32MultiArray
-from geometry_msgs.msg import PoseStamped
+from std_msgs.msg import String, Empty, Float32MultiArray, ByteMultiArray
+from geometry_msgs.msg import PoseStamped, Twist
 from rclpy.node import Node
 
 from src.robots.robot_manager import RobotManager
@@ -30,7 +30,8 @@ class ROS_RobotManager(Node):
 
         self.create_subscription(String, "/omniFPS/Robots/Reset", self.reset_robot, 1)
         self.create_subscription(Empty, "/omniFPS/Robots/ResetAll", self.reset_robots, 1)
-        self.create_subscription(Float32MultiArray, "/omniFPS/Robots/FloatingPlatform/thrusters/input", self.set_robot_forces, 1)
+        self.create_subscription(ByteMultiArray, "/omniFPS/Robots/FloatingPlatform/thrusters/input", self.set_robot_forces, 1)
+        self.create_subscription(Twist, "/omniFPS/Robots/FloatingPlatform/thrusters/twist_input", self.set_twist_robot_forces, 1)
 
         self.domain_id = 0
         self.modifications: List[Tuple[callable, dict]] = []
@@ -98,11 +99,11 @@ class ROS_RobotManager(Node):
         Sets forces for a specific robot and stores it in `last_forces_command`.
         """
         robot_name = "/FloatingPlatform"
-        forces = data 
+        comanded_forces = [int.from_bytes(b, byteorder='big') for b in data.data] 
         
         # Use custom_funct to set last forces on the specified robot
-        self.RM.custom_funct(robot_name, "set_forces_command", forces=forces)
+        self.RM.custom_funct(robot_name, "set_forces_command", comanded_forces=comanded_forces)
         
         # Schedule force application for the robot in the modifications list
-        self.modifications.append([self.RM.custom_funct, {"robot_name": robot_name, "function_name": "apply_forces_command"}])
+        # self.modifications.append([self.RM.custom_funct, {"robot_name": robot_name, "function_name": "apply_forces_command"}])
         self.persistent_modifications[robot_name] = {"robot_name": robot_name, "function_name": "apply_forces_command"}
