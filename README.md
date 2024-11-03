@@ -24,11 +24,19 @@ docker pull nvcr.io/nvidia/isaac-sim:4.2.0
 ```
 
 
-On another terminal
+On another terminal w/ docker 
 
 ```
 docker exec -it -w /workspace/control_workstation isaac-sim-zeroGlab-container /bin/bash
 ./setup_ws.sh
+source install/setup.bash
+ros2 run unilufp_multibytearr_keyboard unilufp_multibytearr_keyboard
+```
+
+On another terminal w/o docker w/ sourced ros2
+```
+cd control_workstation
+colcon build
 source install/setup.bash
 ros2 run unilufp_multibytearr_keyboard unilufp_multibytearr_keyboard
 ```
