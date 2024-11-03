@@ -4,7 +4,7 @@ docker run --name isaac-sim-zeroGlab-container -it --gpus all -e "ACCEPT_EULA=Y"
     -v $HOME/.Xauthority:/root/.Xauthority \
     -e DISPLAY \
     -e "PRIVACY_CONSENT=Y" \
-    -v ${PWD}:/workspace/zeroGlab \
+    -v ${PWD}:/workspace \
     -v ~/docker/isaac-sim/cache/kit:/isaac-sim/kit/cache:rw \
     -v ~/docker/isaac-sim/cache/ov:/root/.cache/ov:rw \
     -v ~/docker/isaac-sim/cache/pip:/root/.cache/pip:rw \
