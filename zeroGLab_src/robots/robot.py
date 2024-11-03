@@ -27,16 +27,16 @@ from omni.isaac.dynamic_control import _dynamic_control
 from omni.isaac.core.prims import RigidPrim, RigidPrimView
 from pxr import Gf, UsdGeom, Usd, UsdPhysics, PhysxSchema
 
-from src.utils.pxr_utils import (
+from zeroGLab_src.utils.pxr_utils import (
     createObject,
     createXform,
     addDefaultOps,
     setDefaultOpsTyped,
 )
 
-# from src.configurations.robot_confs import RobotManagerConf
-# from src.robots.articulations.modular_floating_platform import ModularFloatingPlatform
-# from src.robots.articulations.views.modular_floating_platform_view import ModularFloatingPlatformView
+# from zeroGLab_src.configurations.robot_confs import RobotManagerConf
+# from zeroGLab_src.robots.articulations.modular_floating_platform import ModularFloatingPlatform
+# from zeroGLab_src.robots.articulations.views.modular_floating_platform_view import ModularFloatingPlatformView
 
 class Robot:
     """

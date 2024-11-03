@@ -14,9 +14,9 @@ import omni
 
 from pxr import UsdGeom, UsdLux, Gf, Usd, UsdPhysics
 
-from src.configurations.environments import ZeroGLabConf
-from src.environments.base_env import BaseEnv
-from src.robots.robot_manager import RobotManager
+from zeroGLab_src.configurations.environments import ZeroGLabConf
+from zeroGLab_src.environments.base_env import BaseEnv
+from zeroGLab_src.robots.robot_manager import RobotManager
 from assets import get_assets_path
 
 

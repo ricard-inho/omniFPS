@@ -20,7 +20,7 @@ When possible, the parameter values are also checked to make sure they are withi
 
 from typing import Any
 
-# from src.configurations.procedural_terrain_confs import (
+# from zeroGLab_src.configurations.procedural_terrain_confs import (
 #     TerrainManagerConf,
 #     MoonYardConf,
 #     CraterGeneratorConf,
@@ -28,11 +28,11 @@ from typing import Any
 #     BaseTerrainGeneratorConf,
 #     DeformationEngineConf,
 # )
-from src.configurations.rendering_confs import FlaresConf, RendererConf, MotionBlurConf, ChromaticAberrationsConf
-from src.configurations.environments import ZeroGLabConf #LunalabConf, LunaryardConf, LargeScaleTerrainConf
-# from src.configurations.auto_labeling_confs import AutoLabelingConf, CameraConf
-# from src.configurations.stellar_engine_confs import StellarEngineConf, SunConf
-from src.configurations.physics_confs import PhysicsSceneConf
+from zeroGLab_src.configurations.rendering_confs import FlaresConf, RendererConf, MotionBlurConf, ChromaticAberrationsConf
+from zeroGLab_src.configurations.environments import ZeroGLabConf #LunalabConf, LunaryardConf, LargeScaleTerrainConf
+# from zeroGLab_src.configurations.auto_labeling_confs import AutoLabelingConf, CameraConf
+# from zeroGLab_src.configurations.stellar_engine_confs import StellarEngineConf, SunConf
+from zeroGLab_src.configurations.physics_confs import PhysicsSceneConf
 
 
 class ConfigFactory:

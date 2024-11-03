@@ -10,7 +10,7 @@ from typing import Tuple
 import carb
 import omni
 
-from src.configurations.rendering_confs import FlaresConf, ChromaticAberrationsConf, MotionBlurConf
+from zeroGLab_src.configurations.rendering_confs import FlaresConf, ChromaticAberrationsConf, MotionBlurConf
 
 
 # ==============================================================================

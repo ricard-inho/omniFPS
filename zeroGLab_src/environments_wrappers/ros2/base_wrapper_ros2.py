@@ -10,7 +10,7 @@ __status__ = "development"
 from typing import List, Tuple
 
 # Custom libs
-import src.environments.rendering as rndr
+import zeroGLab_src.environments.rendering as rndr
 
 # Loads ROS2 dependent libraries
 from rclpy.node import Node

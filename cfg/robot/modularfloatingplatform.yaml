@@ -8,7 +8,7 @@ robots_settings:
   parameters:
     -
       robot_name: FloatingPlatform
-      usd_path: /workspace/zeroGlab/assets/USD_Assets/robots/FloatingPlatform.usd
+      usd_path: /workspace/assets/USD_Assets/robots/FloatingPlatform.usd
       pose:
         position: [0.0, 0.0, 0.3]
         orientation: [0, 0, 0, 1]

@@ -14,7 +14,7 @@ from std_msgs.msg import String, Empty, Float32MultiArray, ByteMultiArray
 from geometry_msgs.msg import PoseStamped, Twist
 from rclpy.node import Node
 
-from src.robots.robot_manager import RobotManager
+from zeroGLab_src.robots.robot_manager import RobotManager
 
 import torch
 
@@ -31,7 +31,6 @@ class ROS_RobotManager(Node):
         self.create_subscription(String, "/omniFPS/Robots/Reset", self.reset_robot, 1)
         self.create_subscription(Empty, "/omniFPS/Robots/ResetAll", self.reset_robots, 1)
         self.create_subscription(ByteMultiArray, "/omniFPS/Robots/FloatingPlatform/thrusters/input", self.set_robot_forces, 1)
-        self.create_subscription(Twist, "/omniFPS/Robots/FloatingPlatform/thrusters/twist_input", self.set_twist_robot_forces, 1)
 
         self.domain_id = 0
         self.modifications: List[Tuple[callable, dict]] = []

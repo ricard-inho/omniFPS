@@ -7,8 +7,8 @@ __email__ = "ricard.marsal@uni.lu"
 __status__ = "development"
 
 
-from src.environments_wrappers.ros2.base_wrapper_ros2 import ROS_BaseManager
-from src.environments.zeroglab import ZeroGLabController
+from zeroGLab_src.environments_wrappers.ros2.base_wrapper_ros2 import ROS_BaseManager
+from zeroGLab_src.environments.zeroglab import ZeroGLabController
 
 from std_msgs.msg import Bool, Float32, ColorRGBA, Int32
 from geometry_msgs.msg import Pose

@@ -14,13 +14,13 @@ import omni
 from omni.isaac.core.world import World
 
 
-from src.utils.pxr_utils import createXform
-from src.configurations.robot_confs import RobotManagerConf
-from src.robots.robot import (
+from zeroGLab_src.utils.pxr_utils import createXform
+from zeroGLab_src.configurations.robot_confs import RobotManagerConf
+from zeroGLab_src.robots.robot import (
     Robot,
     RobotRigidGroup
 )
-from src.robots.uni_lu_fp.uni_lu_fp import UniLuFP
+from zeroGLab_src.robots.uni_lu_fp.uni_lu_fp import UniLuFP
 
 class RobotFactory:
     @staticmethod

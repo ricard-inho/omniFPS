@@ -10,7 +10,7 @@ def startSim(cfg: dict):
     import isaacsim
     from omni.isaac.kit import SimulationApp
     import omni
-    # from src.environments.rendering import set_lens_flares, set_chromatic_aberrations, set_motion_blur
+    # from zeroGLab_src.environments.rendering import set_lens_flares, set_chromatic_aberrations, set_motion_blur
 
     class SimulationApp_wait(SimulationApp):
         def __init__(self, launch_config: dict = None, experience: str = "") -> None:
@@ -93,14 +93,14 @@ def startSim(cfg: dict):
     # Starts the ROS2 extension. Allows to import ROS2 related things.
     if cfg["mode"]["name"] == "ROS2":
         # ROS2 startup routine
-        from src.environments_wrappers.ros2 import enable_ros2
+        from zeroGLab_src.environments_wrappers.ros2 import enable_ros2
 
         enable_ros2(simulation_app, bridge_name=cfg["mode"]["bridge_name"])
         import rclpy
 
         rclpy.init()
         # Call to the environment factory to load the correct environment.
-        from src.environments_wrappers.ros2.simulation_manager_ros2 import (
+        from zeroGLab_src.environments_wrappers.ros2.simulation_manager_ros2 import (
             ROS2_SimulationManager,
         )
 

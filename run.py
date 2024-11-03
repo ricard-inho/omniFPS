@@ -7,8 +7,8 @@ __email__ = "ricard.marsal@uni.lu"
 __status__ = "development"
 
 from omegaconf import DictConfig, OmegaConf, ListConfig
-from src.configurations import configFactory
-from src.environments_wrappers import startSim
+from zeroGLab_src.configurations import configFactory
+from zeroGLab_src.environments_wrappers import startSim
 
 from typing import Dict, List
 import logging

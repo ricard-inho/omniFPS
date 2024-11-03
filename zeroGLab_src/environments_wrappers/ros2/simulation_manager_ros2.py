@@ -19,9 +19,9 @@ import omni
 import time
 
 
-from src.physics.physics_scene import PhysicsSceneManager
-from src.environments_wrappers.ros2.zero_g_lab_ros2 import ROS_ZeroGLabManager
-from src.environments_wrappers.ros2.robot_manager_ros2 import ROS_RobotManager
+from zeroGLab_src.physics.physics_scene import PhysicsSceneManager
+from zeroGLab_src.environments_wrappers.ros2.zero_g_lab_ros2 import ROS_ZeroGLabManager
+from zeroGLab_src.environments_wrappers.ros2.robot_manager_ros2 import ROS_RobotManager
 from rclpy.executors import SingleThreadedExecutor as Executor
 import rclpy
 

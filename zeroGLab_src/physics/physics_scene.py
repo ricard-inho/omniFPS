@@ -6,7 +6,7 @@ __maintainer__ = "Antoine Richard"
 __email__ = "antoine.richard@uni.lu"
 __status__ = "development"
 
-from src.configurations.physics_confs import PhysicsSceneConf
+from zeroGLab_src.configurations.physics_confs import PhysicsSceneConf
 
 from omni.isaac.core.physics_context.physics_context import PhysicsContext
 

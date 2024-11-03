@@ -10,7 +10,7 @@ import omni
 
 from pxr import Usd
 
-from src.robots.robot_manager import RobotManager
+from zeroGLab_src.robots.robot_manager import RobotManager
 
 
 class BaseEnv:

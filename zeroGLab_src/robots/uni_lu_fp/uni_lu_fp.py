@@ -7,7 +7,7 @@ __email__ = "ricard.marsal@uni.lu"
 __status__ = "development"
 
 
-from src.robots.robot import Robot
+from zeroGLab_src.robots.robot import Robot
 import numpy as np
 from pxr import Gf
 import omni.isaac.dynamic_control as dc_module
