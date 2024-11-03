@@ -165,3 +165,7 @@ cython_debug/
 .vscode/
 
 .thumbs
+
+control_workstation/install/*
+control_workstation/log/*
+control_workstation/build/*

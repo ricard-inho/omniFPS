@@ -39,6 +39,10 @@ RUN apt-get update && apt-get install -y \
     wget \
     && rm -rf /var/lib/apt/lists/*
 
+RUN apt-get update && apt-get install -y \
+    python3-colcon-common-extensions \
+    && rm -rf /var/lib/apt/lists/*
+
 RUN /isaac-sim/python.sh -m pip install skyfield zfpy numba gdown
 RUN /isaac-sim/python.sh -m pip install gdal==$(gdal-config --version)
 

@@ -24,12 +24,11 @@ docker pull nvcr.io/nvidia/isaac-sim:4.2.0
 ```
 
 
-On another terminal start the ROS2 humble docker.
-
-> [!TIP]
-> Build the docker first by running `./docker.ros2_humble/build.sh`
+On another terminal
 
 ```
-./docker.ros2_humble/run.sh
-ros2 topic pub /AirBearingsSwitch std_msgs/Bool "data: true" -1
+docker exec -it -w /workspace/control_workstation isaac-sim-zeroGlab-container /bin/bash
+./setup_ws.sh
+source install/setup.bash
+ros2 run unilufp_multibytearr_keyboard unilufp_multibytearr_keyboard
 ```
