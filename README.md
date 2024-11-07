@@ -37,12 +37,11 @@ On another terminal w/o docker w/ sourced ros2
 
 >[!Note]
 > Source the setup files before running the commnads below
-
-```
-cd control_workstation
-colcon build
-source install/setup.bash
-```
+> ```
+> cd control_workstation
+> colcon build
+> source install/setup.bash
+> ```
 
 **Keyboard control**
 ```
