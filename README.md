@@ -49,7 +49,7 @@ source install/setup.bash
 ros2 run unilufp_multibytearr_keyboard unilufp_multibytearr_keyboard
 ```
 
-**Random Gausian tf**
+**Random Gausian PoseStamped**
 ```
 ros2 run random_gausian_tf rand_gau_tf_pub
 ```
