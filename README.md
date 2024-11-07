@@ -34,9 +34,22 @@ ros2 run unilufp_multibytearr_keyboard unilufp_multibytearr_keyboard
 ```
 
 On another terminal w/o docker w/ sourced ros2
+
+>[!Note]
+> Source the setup files before running the commnads below
+
 ```
 cd control_workstation
 colcon build
 source install/setup.bash
+```
+
+**Keyboard control**
+```
 ros2 run unilufp_multibytearr_keyboard unilufp_multibytearr_keyboard
+```
+
+**Random Gausian tf**
+```
+ros2 run random_gausian_tf rand_gau_tf_pub
 ```
