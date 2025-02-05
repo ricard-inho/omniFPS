@@ -19,7 +19,7 @@ docker pull nvcr.io/nvidia/isaac-sim:4.2.0
 
 ## Getting Started
 ```
-./docker.zeroGlab/run.sh
+./docker.zeroglab/run.sh
 /isaac-sim/python.sh run.py
 ```
 
