@@ -1,10 +1,4 @@
-__author__ = "Antoine Richard, Junnosuke Kamohara, Ricard Marsal"
-__copyright__ = "Copyright 2024-25, Space Robotics Lab, SnT, University of Luxembourg, SpaceR"
-__license__ = "BSD 3-Clause"
-__version__ = "2.0.0"
-__maintainer__ = "Ricard Marsal"
-__email__ = "ricard.marsal@uni.lu"
-__status__ = "development"
+
 
 from typing import Dict, List, Tuple
 import numpy as np
@@ -97,34 +91,6 @@ class RobotManager:
                     robot_parameter.robot_name,
                     robot_parameter.pose.position,
                     robot_parameter.pose.orientation,
-                    robot_parameter.domain_id,
-                )
-                self.add_RRG(
-                    robot_parameter.robot_name,
-                    robot_parameter.target_links,
-                    world,
-                )
-
-    def preload_robot_at_pose(
-        self,
-        world: World,
-        position: Tuple[float, float, float],
-        orientation: Tuple[float, float, float, float],
-    ) -> None:
-        """
-        Preload the robots in the scene.
-        Args:
-            world (Usd.Stage): The usd stage scene.
-            position (Tuple[float, float, float]): The position of the robot. (x, y, z)
-            orientation (Tuple[float, float, float, float]): The orientation of the robot. (w, x, y, z)
-        """
-        if len(self.robot_parameters) > 0:
-            for robot_parameter in self.robot_parameters:
-                self.add_robot(
-                    robot_parameter.usd_path,
-                    robot_parameter.robot_name,
-                    position,
-                    orientation,
                     robot_parameter.domain_id,
                 )
                 self.add_RRG(
@@ -261,20 +227,6 @@ class RobotManager:
         else:
             warnings.warn("Robot does not exist. Ignoring request.")
 
-    def teleport_robot(
-        self, robot_name: str = None, position: np.ndarray = None, orientation: np.ndarray = None
-    ) -> None:
-        """
-        Teleport a specific robot to a specific position and orientation.
-
-        Args:
-            robot_name (str): The name of the robot.
-        """
-        if robot_name in self.robots.keys():
-            self.robots[robot_name].teleport(position, orientation)
-        else:
-            warnings.warn(f"Robot {robot_name} does not exist. Ignoring request.")
-            print("available robots: ", self.robots.keys())
 
     def custom_funct(self, robot_name:str=None, function_name:str=None,  *args, **kwargs)-> None:
         if robot_name in self.robots.keys():

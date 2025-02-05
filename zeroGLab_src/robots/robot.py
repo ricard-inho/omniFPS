@@ -1,10 +1,3 @@
-__author__ = "Antoine Richard, Junnosuke Kamohara, Ricard Marsal"
-__copyright__ = "Copyright 2024-25, Space Robotics Lab, SnT, University of Luxembourg, SpaceR"
-__license__ = "BSD 3-Clause"
-__version__ = "2.0.0"
-__maintainer__ = "Ricard Marsal"
-__email__ = "ricard.marsal@uni.lu"
-__status__ = "development"
 
 from typing import Dict, List, Tuple
 import numpy as np
@@ -146,38 +139,6 @@ class Robot:
 
         self.reset_position = position
         self.reset_orientation = orientation
-
-    def teleport(self, p: List[float], q: List[float]) -> None:
-        """
-        Teleport the robot to a specific position and orientation.
-
-        Args:
-            p (list): The position of the robot.
-            q (list): The orientation of the robot. (x, y, z, w)
-        """
-        self.get_root_rigid_body_path()
-        transform = _dynamic_control.Transform(p, q)
-        self.dc.set_rigid_body_pose(self.root_body_id, transform)
-        self.dc.set_rigid_body_linear_velocity(self.root_body_id, [0, 0, 0])
-        self.dc.set_rigid_body_angular_velocity(self.root_body_id, [0, 0, 0])
-
-    def reset(self) -> None:
-        """
-        Reset the robot to its original position and orientation.
-        """
-
-        # w = self.reset_orientation.GetReal()
-        # xyz = self.reset_orientation.GetImaginary()
-        self.root_body_id = None
-        self.teleport(
-            [self.reset_position[0], self.reset_position[1], self.reset_position[2]],
-            [
-                self.reset_orientation[1],
-                self.reset_orientation[2],
-                self.reset_orientation[3],
-                self.reset_orientation[0],
-            ],
-        )
 
     
 class RobotRigidGroup:

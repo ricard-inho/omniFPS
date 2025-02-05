@@ -1,10 +1,4 @@
-__author__ = "Ricard Marsal"
-__copyright__ = "Copyright 2024-25, Space Robotics Lab, SnT, University of Luxembourg, SpaceR"
-__license__ = "BSD 3-Clause"
-__version__ = "2.0.0"
-__maintainer__ = "Ricard Marsal"
-__email__ = "ricard.marsal@uni.lu"
-__status__ = "development"
+
 
 
 from zeroGLab_src.robots.robot import Robot

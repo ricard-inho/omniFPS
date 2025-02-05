@@ -1,7 +1,7 @@
 ![OMNIFPS_LOGO](data/omnifps.png) 
 Omniverse Floating Platform Simulator
 
-## Setup Instructions
+## Installation
 ### Obtaining the Isaac Sim Container
 
 > [!IMPORTANT]

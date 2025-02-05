@@ -1,10 +1,3 @@
-__author__ = "Antoine Richard, Junnosuke Kamohara, Ricard Marsal"
-__copyright__ = "Copyright 2024-25, Space Robotics Lab, SnT, University of Luxembourg, SpaceR"
-__license__ = "BSD 3-Clause"
-__version__ = "2.0.0"
-__maintainer__ = "Ricard Marsal"
-__email__ = "ricard.marsal@uni.lu"
-__status__ = "development"
 
 from typing import List, Tuple, Dict
 import numpy as np
@@ -138,13 +131,6 @@ class ZeroGLabController(BaseEnv):
                 lights.append(prim)
         return lights
 
-    def load_DEM(self) -> None:
-        """
-        Loads the DEM and the mask from the TerrainManager.
-        """
-
-        self.dem = self.T.getDEM()
-        self.mask = self.T.getMask()
 
     def collect_interactive_assets(self) -> None:
         """
@@ -155,67 +141,3 @@ class ZeroGLabController(BaseEnv):
         self._room_lights_prim = self.stage.GetPrimAtPath(self.stage_settings['room_lights_path'])
         self._room_lights_xform = UsdGeom.Xformable(self._room_lights_prim)
         self._room_lights_lux = self.get_lux_assets(self._room_lights_prim)
-
-
-    # ==============================================================================
-    # Room lights control
-    # ==============================================================================
-    def set_room_lights_intensity(self, intensity: float = 0.0) -> None:
-        """
-        Sets the intensity of the room lights.
-
-        Args:
-            intensity (float): The intensity of the room lights (arbitrary unit).
-        """
-
-        for light in self._room_lights_lux:
-            light.GetAttribute("intensity").Set(intensity)
-
-    def set_room_lights_radius(self, radius: float = 0.1) -> None:
-        """
-        Sets the radius of the room lights.
-
-        Args:
-            radius (float): The radius of the room lights (in meters).
-        """
-
-        for light in self._room_lights_lux:
-            light.GetAttribute("radius").Set(radius)
-
-    def set_room_lights_FOV(self, FOV: float = 42.0) -> None:
-        """
-        Sets the FOV of the room lights.
-
-        Args:
-            FOV (float): The FOV of the room lights (in degrees).
-        """
-
-        for light in self._room_lights_lux:
-            light.GetAttribute("shaping:cone:angle").Set(FOV)
-
-    def set_room_lights_color(self, color: Tuple[float, float, float] = (1.0, 1.0, 1.0)) -> None:
-        """
-        Sets the color of the room lights.
-
-        Args:
-            color (List[float]): The color of the room lights (RGB).
-        """
-
-        color = Gf.Vec3d(color[0], color[1], color[2])
-        for light in self._room_lights_lux:
-            light.GetAttribute("color").Set(color)
-
-    def turn_room_lights_on_off(self, flag: bool = True) -> None:
-        """
-        Turns the room lights on or off.
-
-        Args:
-            flag (bool): True to turn the room lights on, False to turn them off.
-        """
-
-        if flag:
-            self._room_lights_prim.GetAttribute("visibility").Set("visible")
-        else:
-            self._room_lights_prim.GetAttribute("visibility").Set("invisible")
-
-    
