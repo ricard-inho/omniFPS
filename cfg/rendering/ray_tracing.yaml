@@ -1,6 +1,6 @@
 renderer:
   renderer: "RayTracedLighting"
-  headless: True
+  headless: False
   samples_per_pixel_per_frame: 32
   max_bounces: 6
   max_specular_transmission_bounces: 6
