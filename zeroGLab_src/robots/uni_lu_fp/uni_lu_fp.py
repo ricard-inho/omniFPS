@@ -43,26 +43,26 @@ class UniLuFP(Robot):
     def define_articulations(self)->None:
         self.articulation = self.dc.get_articulation("/Robots/FloatingPlatform")
         #Joints
-        self.dof_ptr_x = self.dc.find_articulation_dof(self.articulation, "fp_world_joint_x")
-        self.dof_ptr_y = self.dc.find_articulation_dof(self.articulation, "fp_world_joint_y")
-        self.dof_ptr_z = self.dc.find_articulation_dof(self.articulation, "fp_world_joint_z")
+        self.dof_ptr_x = self.dc.find_articulation_dof(self.articulation, "PrismaticJoint")
+        self.dof_ptr_y = self.dc.find_articulation_dof(self.articulation, "PrismaticJoint0")
+        self.dof_ptr_z = self.dc.find_articulation_dof(self.articulation, "RevoluteJoint")
         #Thrusters
-        self.v_thruster_0 = self.dc.find_articulation_body(self.articulation, "v_thruster_0")
-        self.v_thruster_1 = self.dc.find_articulation_body(self.articulation, "v_thruster_1")
-        self.v_thruster_2 = self.dc.find_articulation_body(self.articulation, "v_thruster_2")
-        self.v_thruster_3 = self.dc.find_articulation_body(self.articulation, "v_thruster_3")
-        self.v_thruster_4 = self.dc.find_articulation_body(self.articulation, "v_thruster_4")
-        self.v_thruster_5 = self.dc.find_articulation_body(self.articulation, "v_thruster_5")
-        self.v_thruster_6 = self.dc.find_articulation_body(self.articulation, "v_thruster_6")
-        self.v_thruster_7 = self.dc.find_articulation_body(self.articulation, "v_thruster_7")
+        self.v_thruster_1 = self.dc.find_articulation_body(self.articulation, "thruster_1")
+        self.v_thruster_2 = self.dc.find_articulation_body(self.articulation, "thruster_2")
+        self.v_thruster_3 = self.dc.find_articulation_body(self.articulation, "thruster_3")
+        self.v_thruster_4 = self.dc.find_articulation_body(self.articulation, "thruster_4")
+        self.v_thruster_5 = self.dc.find_articulation_body(self.articulation, "thruster_5")
+        self.v_thruster_6 = self.dc.find_articulation_body(self.articulation, "thruster_6")
+        self.v_thruster_7 = self.dc.find_articulation_body(self.articulation, "thruster_7")
+        self.v_thruster_0 = self.dc.find_articulation_body(self.articulation, "thruster_8")
         
 
     def set_dof_pos(self)->None:
         """
         Sets the position and velocity of degrees of freedom (DOFs) for the FloatingPlatform articulation.
         """
-        self.dc.set_dof_position(self.dof_ptr_x, 2.5)
-        self.dc.set_dof_position(self.dof_ptr_y, -1)
+        self.dc.set_dof_position(self.dof_ptr_x, 0.0)
+        self.dc.set_dof_position(self.dof_ptr_y, 0.0)
         self.dc.set_dof_position(self.dof_ptr_z, 0.0)
 
         self.dc.set_dof_velocity(self.dof_ptr_x, 0.0)
@@ -89,26 +89,43 @@ class UniLuFP(Robot):
         if self.forces_command:
             if self.forces_command[0] == 1: #Air bearing
                 forces = self._map_forces(commands=self.forces_command[1:]) 
-                self.dc.apply_body_force(self.v_thruster_0, forces[0], self.thrusters_pos[0], False)
-                self.dc.apply_body_force(self.v_thruster_1, forces[1], self.thrusters_pos[0], False)
-                self.dc.apply_body_force(self.v_thruster_2, forces[2], self.thrusters_pos[1], False)
-                self.dc.apply_body_force(self.v_thruster_3, forces[3], self.thrusters_pos[1], False)
-                self.dc.apply_body_force(self.v_thruster_4, forces[4], self.thrusters_pos[2], False)
-                self.dc.apply_body_force(self.v_thruster_5, forces[5], self.thrusters_pos[2], False)
-                self.dc.apply_body_force(self.v_thruster_6, forces[6], self.thrusters_pos[3], False)
-                self.dc.apply_body_force(self.v_thruster_7, forces[7], self.thrusters_pos[3], False)
+                #self.dc.apply_body_force(self.v_thruster_0, forces[0], self.thrusters_pos[0], False)
+                #self.dc.apply_body_force(self.v_thruster_1, forces[1], self.thrusters_pos[0], False)
+                #self.dc.apply_body_force(self.v_thruster_2, forces[2], self.thrusters_pos[1], False)
+                #self.dc.apply_body_force(self.v_thruster_3, forces[3], self.thrusters_pos[1], False)
+                #self.dc.apply_body_force(self.v_thruster_4, forces[4], self.thrusters_pos[2], False)
+                #self.dc.apply_body_force(self.v_thruster_5, forces[5], self.thrusters_pos[2], False)
+                #self.dc.apply_body_force(self.v_thruster_6, forces[6], self.thrusters_pos[3], False)
+                #self.dc.apply_body_force(self.v_thruster_7, forces[7], self.thrusters_pos[3], False)
+
+                self.dc.apply_body_force(self.v_thruster_0, forces[0], [0,0,0], False)
+                self.dc.apply_body_force(self.v_thruster_1, forces[1], [0,0,0], False)
+                self.dc.apply_body_force(self.v_thruster_2, forces[2], [0,0,0], False)
+                self.dc.apply_body_force(self.v_thruster_3, forces[3], [0,0,0], False)
+                self.dc.apply_body_force(self.v_thruster_4, forces[4], [0,0,0], False)
+                self.dc.apply_body_force(self.v_thruster_5, forces[5], [0,0,0], False)
+                self.dc.apply_body_force(self.v_thruster_6, forces[6], [0,0,0], False)
+                self.dc.apply_body_force(self.v_thruster_7, forces[7], [0,0,0], False)
         else:
             print("Forces Not defined")
 
     def _map_forces(self, commands)->List:
         forces = []
-        num_open_thrusters = max(commands.count(1), 1) #Aboids division by 0
+        num_open_thrusters = max(commands.count(1), 1) #Avoids division by 0
+        #for i, force in enumerate(commands):
+        #    forces.append(
+        #        [
+        #            force * (1/num_open_thrusters) * self.thrusters_directions[i][0], 
+        #            force * (1/num_open_thrusters) * self.thrusters_directions[i][1], 
+        #            0.0
+        #        ]
+        #    )
         for i, force in enumerate(commands):
             forces.append(
                 [
-                    force * (1/num_open_thrusters) * self.thrusters_directions[i][0], 
-                    force * (1/num_open_thrusters) * self.thrusters_directions[i][1], 
-                    0.0
+                    0.0, 
+                    0.0, 
+                    force / num_open_thrusters
                 ]
             )
         return forces
