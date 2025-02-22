@@ -1,7 +1,7 @@
 name: ZeroGLab
 seed: 42  
-physics_dt: 0.0333 # 30 Hz
-rendering_dt: 0.0333 # 30 Hz
+physics_dt: 0.0166666 # 60 Hz
+rendering_dt: 0.066666 # 15 Hz
 enforce_realtime: true
 
 zeroglab_settings: # These settings cannot be changed.
