@@ -20,7 +20,7 @@ class UniLuFP(Robot):
         )
 
         #Forces to apply to the thrusters 
-        self.forces_command = None
+        self.forces_command = [0]*9
         
         self.thrusters_directions = [
             (-1, 1),   # Thruster 0
@@ -74,6 +74,7 @@ class UniLuFP(Robot):
         Reset the robot to its original position and orientation.
         """
         self.set_dof_pos()
+        self.forces_command = [0]*9
         
 
     def set_forces_command(self, comanded_forces: List) -> None:
