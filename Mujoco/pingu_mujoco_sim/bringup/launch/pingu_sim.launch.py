@@ -1,49 +1,29 @@
 import os
+
+from ament_index_python.packages import get_package_share_directory
+
+
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, RegisterEventHandler
-from launch.conditions import IfCondition, UnlessCondition
-from launch.event_handlers import OnProcessExit
-from launch.substitutions import (
-    Command,
-    FindExecutable,
-    PathJoinSubstitution,
-    LaunchConfiguration,
-)
+from launch.actions import ExecuteProcess, RegisterEventHandler
+from launch.event_handlers import OnProcessExit, OnProcessStart
 
 from launch_ros.actions import Node
-from launch_ros.substitutions import FindPackageShare
+
+import xacro
 
 
 def generate_launch_description():
-    # Set package name
-    package = FindPackageShare("pingu_mujoco_sim")
-    arm_package = FindPackageShare("levion_arm_ros2_control")
-    rw_package = FindPackageShare("rw_ros2_control")
+    mujoco_ros2_control_demos_path = os.path.join(
+        get_package_share_directory('pingu_mujoco_sim'),)
 
-    # Declare arguments
-    declared_arguments = []
-    declared_arguments.append(
-        DeclareLaunchArgument(
-            "gui",
-            default_value="true",
-            description="Start RViz2 automatically with this launch file.",
-        )
-    )
+    xacro_file = os.path.join(get_package_share_directory('pingu_launch'),
+                              'urdf',
+                              'pingu.urdf.xacro')
+    doc = xacro.parse(open(xacro_file))
+    xacro.process_doc(doc)
+    robot_description = {'robot_description': doc.toxml()}
 
-    # Initialize Arguments
-    gui = LaunchConfiguration("gui")
-
-    # set urdf
-    urdf = PathJoinSubstitution([package, "urdf", "pingu.urdf"])
-    robot_description_content = Command(
-        [
-            FindExecutable(name="xacro"),
-            " ",
-            urdf,
-            " ",
-        ]
-    )
-    robot_description = {"robot_description": robot_description_content}
+    controller_config_file = os.path.join(mujoco_ros2_control_demos_path, 'config', 'pingu_controllers.yaml')
 
     node_mujoco_ros2_control = Node(
         package='mujoco_ros2_control',
@@ -51,98 +31,42 @@ def generate_launch_description():
         output='screen',
         parameters=[
             robot_description,
-            "pingu_controllers.yaml",
-            {'mujoco_model_path':os.path.join("pingu_mujoco_sim", 'description', 'mujoco_models', 'pingu.xml')}
+            controller_config_file,
+            {'mujoco_model_path':os.path.join(mujoco_ros2_control_demos_path, 'mujoco_models', 'pingu.xml')}
         ]
     )
 
-    robot_controllers = PathJoinSubstitution(
-        [
-            package,
-            "config",
-            "pingu_controllers.yaml",
-        ]
-    )
-    rviz_config_file = PathJoinSubstitution(
-        [
-            package,
-            "rviz",
-            "rw.rviz",
-        ]
+    node_robot_state_publisher = Node(
+        package='robot_state_publisher',
+        executable='robot_state_publisher',
+        output='screen',
+        parameters=[robot_description]
     )
 
-    control_node = Node(
-        package="controller_manager",
-        executable="ros2_control_node",
-        parameters=[robot_controllers, robot_description],
-        output="both",
-    )
-    robot_state_pub_node = Node(
-        package="robot_state_publisher",
-        executable="robot_state_publisher",
-        output="both",
-        parameters=[robot_description],
-    )
-    rviz_node = Node(
-        package="rviz2",
-        executable="rviz2",
-        name="rviz2",
-        output="log",
-        arguments=["-d", rviz_config_file],
-        condition=IfCondition(gui),
+    load_joint_state_controller = ExecuteProcess(
+        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active',
+             'joint_state_broadcaster'],
+        output='screen'
     )
 
-    joint_state_broadcaster_spawner = Node(
-        package="controller_manager",
-        executable="spawner",
-        arguments=["joint_state_broadcaster"],
+    load_joint_trajectory_controller = ExecuteProcess(
+        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active', 'velocity_controller'],
+        output='screen'
     )
 
-    #TODO Make is better
-    controller_spawners = [
-        Node(
-            package="controller_manager",
-            executable="spawner",
-            arguments=["left_arm_velocity_controller", "--param-file", robot_controllers],
+    return LaunchDescription([
+        RegisterEventHandler(
+            event_handler=OnProcessStart(
+                target_action=node_mujoco_ros2_control,
+                on_start=[load_joint_state_controller],
+            )
         ),
-
-        Node(
-            package="controller_manager",
-            executable="spawner",
-            arguments=["right_arm_velocity_controller", "--param-file", robot_controllers],
+        RegisterEventHandler(
+            event_handler=OnProcessExit(
+                target_action=load_joint_state_controller,
+                on_exit=[load_joint_trajectory_controller],
+            )
         ),
-
-        Node(
-            package="controller_manager",
-            executable="spawner",
-            arguments=["rw_velocity_controller", "--param-file", robot_controllers],
-        ),
-    ]
-
-    # Delay rviz start after `joint_state_broadcaster`
-    delay_rviz_after_joint_state_broadcaster_spawner = RegisterEventHandler(
-        event_handler=OnProcessExit(
-            target_action=joint_state_broadcaster_spawner,
-            on_exit=[rviz_node],
-        )
-    )
-
-    delay_joint_state_broadcaster_after_robot_controller_spawner = RegisterEventHandler(
-        event_handler=OnProcessExit(
-            target_action=controller_spawners[-1], # Wait for the last controller spawner
-            on_exit=[joint_state_broadcaster_spawner],
-        )
-    )
-
-    nodes = [
         node_mujoco_ros2_control,
-        control_node,
-        robot_state_pub_node,
-        delay_joint_state_broadcaster_after_robot_controller_spawner,
-        delay_rviz_after_joint_state_broadcaster_spawner,
-    ]
-
-    # Add controller spawners to the nodes list
-    nodes.extend(controller_spawners)
-
-    return LaunchDescription(declared_arguments + nodes)
+        node_robot_state_publisher
+    ])
