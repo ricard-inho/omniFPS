@@ -1,3 +1,4 @@
+import os
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, RegisterEventHandler
 from launch.conditions import IfCondition, UnlessCondition
@@ -15,7 +16,7 @@ from launch_ros.substitutions import FindPackageShare
 
 def generate_launch_description():
     # Set package name
-    package = FindPackageShare("pingu_launch")
+    package = FindPackageShare("pingu_mujoco_sim")
     arm_package = FindPackageShare("levion_arm_ros2_control")
     rw_package = FindPackageShare("rw_ros2_control")
 
@@ -24,37 +25,36 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             "gui",
-            default_value="false",
+            default_value="true",
             description="Start RViz2 automatically with this launch file.",
-        )
-    )
-    declared_arguments.append(
-        DeclareLaunchArgument(
-            "prefix",
-            default_value='""',
-            description="Prefix of the joint names, useful for \
-        multi-robot setup. If changed than also joint names in the controllers' configuration \
-        have to be updated.",
         )
     )
 
     # Initialize Arguments
     gui = LaunchConfiguration("gui")
-    prefix = LaunchConfiguration("prefix")
 
-    # Get URDF via xacro
-    # Get URDF via xacro
+    # set urdf
+    urdf = PathJoinSubstitution([package, "urdf", "pingu.urdf"])
     robot_description_content = Command(
         [
-            PathJoinSubstitution([FindExecutable(name="xacro")]),
+            FindExecutable(name="xacro"),
             " ",
-            PathJoinSubstitution([package, "urdf", "pingu.urdf.xacro"]),
+            urdf,
             " ",
-            "prefix:=",
-            prefix,
         ]
     )
     robot_description = {"robot_description": robot_description_content}
+
+    node_mujoco_ros2_control = Node(
+        package='mujoco_ros2_control',
+        executable='mujoco_ros2_control',
+        output='screen',
+        parameters=[
+            robot_description,
+            "pingu_controllers.yaml",
+            {'mujoco_model_path':os.path.join("pingu_mujoco_sim", 'description', 'mujoco_models', 'pingu.xml')}
+        ]
+    )
 
     robot_controllers = PathJoinSubstitution(
         [
@@ -135,6 +135,7 @@ def generate_launch_description():
     )
 
     nodes = [
+        node_mujoco_ros2_control,
         control_node,
         robot_state_pub_node,
         delay_joint_state_broadcaster_after_robot_controller_spawner,

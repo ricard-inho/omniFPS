@@ -7,9 +7,7 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
-# uncomment the following section in order to fill in
-# further dependencies manually.
-# find_package(<dependency> REQUIRED)
+find_package(mujoco_ros2_control REQUIRED)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
@@ -31,9 +29,8 @@ install(
 
 install(
   DIRECTORY 
-    description/launch 
-    description/mesh
-    description/rviz 
+    # description/rviz 
+    description/mujoco_models
     description/urdf
   DESTINATION share/${PROJECT_NAME}
 )
