@@ -62,18 +62,18 @@ def generate_launch_description():
     )
 
     return LaunchDescription([
-        RegisterEventHandler(
-            event_handler=OnProcessStart(
-                target_action=node_mujoco_ros2_control,
-                on_start=[load_joint_state_broadcaster],
-            )
-        ),
-        RegisterEventHandler(
-            event_handler=OnProcessExit(
-                target_action=load_joint_state_broadcaster,
-                on_exit=[load_joint_trajectory_controller],
-            )
-        ),
+        # RegisterEventHandler(
+        #     event_handler=OnProcessStart(
+        #         target_action=node_mujoco_ros2_control,
+        #         on_start=[load_joint_state_broadcaster],
+        #     )
+        # ),
+        # RegisterEventHandler(
+        #     event_handler=OnProcessExit(
+        #         target_action=load_joint_state_broadcaster,
+        #         on_exit=[load_joint_trajectory_controller],
+        #     )
+        # ),
         node_mujoco_ros2_control,
         node_robot_state_publisher
     ])
