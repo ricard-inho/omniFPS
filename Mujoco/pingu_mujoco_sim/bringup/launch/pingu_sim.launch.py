@@ -57,7 +57,7 @@ def generate_launch_description():
     )
 
     load_joint_trajectory_controller = ExecuteProcess(
-        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active', 'rw_velocity_controller'],
+        cmd=['ros2', 'control', 'load_controller', '--set-state', 'configured', 'rw_effort_controller'],
         output='screen'
     )
 
@@ -68,12 +68,12 @@ def generate_launch_description():
                 on_start=[load_joint_state_broadcaster],
             )
         ),
-        RegisterEventHandler(
-            event_handler=OnProcessExit(
-                target_action=load_joint_state_broadcaster,
-                on_exit=[load_joint_trajectory_controller],
-            )
-        ),
+        # RegisterEventHandler(
+        #     event_handler=OnProcessExit(
+        #         target_action=load_joint_state_broadcaster,
+        #         on_exit=[load_joint_trajectory_controller],
+        #     )
+        # ),
         node_mujoco_ros2_control,
         node_robot_state_publisher
     ])
