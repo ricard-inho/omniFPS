@@ -5,12 +5,6 @@
 <!-- =================================================================================== -->
 <robot name="pingu">
  <!-- Enable right arm -->
- <link name="world"/>
- <joint name="base_joint" type="floating">
-  <origin rpy="0 0 0" xyz="0 0 .2875"/>
-  <parent link="world"/>
-  <child link="base_link"/>
- </joint>
  <!-- Base description -->
  <link name="base_link">
   <visual>
