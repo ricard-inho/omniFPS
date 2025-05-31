@@ -35,7 +35,7 @@
    <inertia ixx="0.5" ixy="0" ixz="0" iyy="0.5" iyz="0" izz="0.5"/>
   </inertial>
  </link>
- <joint name="base_joint" type="fixed">
+ <joint name="rw_base_joint" type="fixed">
   <origin rpy="0 0 0" xyz="0 0 .2875"/>
   <parent link="base_link"/>
   <child link="rw_base"/>
@@ -287,7 +287,6 @@
    <state_interface name="position"/>
    <state_interface name="velocity"/>
    <state_interface name="effort"/>
-   <param name="node_id">0</param>
   </joint>
  </ros2_control>
  <!-- real/mujoco-->
@@ -312,16 +311,6 @@
    <state_interface name="position"/>
    <state_interface name="velocity"/>
    <state_interface name="effort"/>
-   <state_interface name="temperature"/>
-   <!-- cubemars hardware settings -->
-   <param name="can_id">104</param>
-   <param name="pole_pairs">21</param>
-   <param name="gear_ratio">8</param>
-   <param name="kt">0.199</param>
-   <!-- levion arm settings -->
-   <param name="pos_limit_min">-1.57079632675</param>
-   <param name="pos_limit_max">1.57079632675</param>
-   <param name="enc_off">0</param>
   </joint>
   <joint name="left_elbow_joint">
    <!-- ros2 control basic setting -->
@@ -340,16 +329,6 @@
    <state_interface name="position"/>
    <state_interface name="velocity"/>
    <state_interface name="effort"/>
-   <state_interface name="temperature"/>
-   <!-- cubemars hardware settings -->
-   <param name="can_id">105</param>
-   <param name="pole_pairs">21</param>
-   <param name="gear_ratio">8</param>
-   <param name="kt">0.199</param>
-   <!-- levion arm settings -->
-   <param name="pos_limit_min">-2.615</param>
-   <param name="pos_limit_max">-0.349</param>
-   <param name="enc_off">0.349</param>
   </joint>
   <joint name="right_shoulder_joint">
    <!-- ros2 control basic setting -->
@@ -368,16 +347,6 @@
    <state_interface name="position"/>
    <state_interface name="velocity"/>
    <state_interface name="effort"/>
-   <state_interface name="temperature"/>
-   <!-- cubemars hardware settings -->
-   <param name="can_id">204</param>
-   <param name="pole_pairs">21</param>
-   <param name="gear_ratio">8</param>
-   <param name="kt">0.199</param>
-   <!-- levion arm settings -->
-   <param name="pos_limit_min">-1.57079632675</param>
-   <param name="pos_limit_max">1.57079632675</param>
-   <param name="enc_off">0</param>
   </joint>
   <joint name="right_elbow_joint">
    <!-- ros2 control basic setting -->
@@ -396,16 +365,6 @@
    <state_interface name="position"/>
    <state_interface name="velocity"/>
    <state_interface name="effort"/>
-   <state_interface name="temperature"/>
-   <!-- cubemars hardware settings -->
-   <param name="can_id">205</param>
-   <param name="pole_pairs">21</param>
-   <param name="gear_ratio">8</param>
-   <param name="kt">0.199</param>
-   <!-- levion arm settings -->
-   <param name="pos_limit_min">0.349</param>
-   <param name="pos_limit_max">2.615</param>
-   <param name="enc_off">-0.349</param>
   </joint>
  </ros2_control>
 </robot>

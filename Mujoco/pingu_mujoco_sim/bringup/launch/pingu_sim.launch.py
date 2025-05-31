@@ -14,16 +14,22 @@ import xacro
 
 def generate_launch_description():
     mujoco_ros2_control_demos_path = os.path.join(
-        get_package_share_directory('pingu_mujoco_sim'),)
+        get_package_share_directory('mujoco_ros2_control_demos'))
+    pingu_mujoco_sim_path = os.path.join(
+        get_package_share_directory('pingu_mujoco_sim'))
 
-    xacro_file = os.path.join(get_package_share_directory('pingu_launch'),
+    # xacro_file = os.path.join(mujoco_ros2_control_demos_path,
+    #                           'urdf',
+    #                           'test_cart_effort.xacro.urdf')    
+    xacro_file = os.path.join(pingu_mujoco_sim_path,
                               'urdf',
-                              'pingu.urdf.xacro')
+                              'pingu.urdf')
+    
     doc = xacro.parse(open(xacro_file))
     xacro.process_doc(doc)
     robot_description = {'robot_description': doc.toxml()}
 
-    controller_config_file = os.path.join(mujoco_ros2_control_demos_path, 'config', 'pingu_controllers.yaml')
+    controller_config_file = os.path.join(pingu_mujoco_sim_path, 'config', 'pingu_controllers.yaml')
 
     node_mujoco_ros2_control = Node(
         package='mujoco_ros2_control',
@@ -32,7 +38,8 @@ def generate_launch_description():
         parameters=[
             robot_description,
             controller_config_file,
-            {'mujoco_model_path':os.path.join(mujoco_ros2_control_demos_path, 'mujoco_models', 'pingu.xml')}
+            # {'mujoco_model_path':os.path.join(mujoco_ros2_control_demos_path, 'mujoco_models', 'test_cart.xml')}
+            {'mujoco_model_path':os.path.join(pingu_mujoco_sim_path, 'mujoco_models', 'pingu.xml')}
         ]
     )
 
@@ -43,14 +50,14 @@ def generate_launch_description():
         parameters=[robot_description]
     )
 
-    load_joint_state_controller = ExecuteProcess(
+    load_joint_state_broadcaster = ExecuteProcess(
         cmd=['ros2', 'control', 'load_controller', '--set-state', 'active',
              'joint_state_broadcaster'],
         output='screen'
     )
 
     load_joint_trajectory_controller = ExecuteProcess(
-        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active', 'velocity_controller'],
+        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active', 'rw_velocity_controller'],
         output='screen'
     )
 
@@ -58,12 +65,12 @@ def generate_launch_description():
         RegisterEventHandler(
             event_handler=OnProcessStart(
                 target_action=node_mujoco_ros2_control,
-                on_start=[load_joint_state_controller],
+                on_start=[load_joint_state_broadcaster],
             )
         ),
         RegisterEventHandler(
             event_handler=OnProcessExit(
-                target_action=load_joint_state_controller,
+                target_action=load_joint_state_broadcaster,
                 on_exit=[load_joint_trajectory_controller],
             )
         ),
