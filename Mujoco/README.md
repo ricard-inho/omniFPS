@@ -4,6 +4,12 @@
 
 Install `mujoco_ros2_control`.
 
+Don't forget to install MuJoCo and setup environment variable.
+
+```bash
+export MUJOCO_DIR=/opt/mujoco-x.x.x # change it to your path
+```
+
 ```bash
 mkdir mjc_ws/src -p
 cd mjc_ws/src
