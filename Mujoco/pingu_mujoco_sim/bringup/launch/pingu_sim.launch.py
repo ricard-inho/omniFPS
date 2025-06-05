@@ -13,17 +13,31 @@ import xacro
 
 
 def generate_launch_description():
+    # Set arguments TODO: make this a LaunchConfiguration
+    prefix = ''
+    floating_joint = 'true'
+    ros2_control = 'true'
+    hw_plugin = 'mujoco'
+    left_arm = 'true'
+    right_arm = 'true'    
+
     mujoco_ros2_control_demos_path = os.path.join(
         get_package_share_directory('pingu_mujoco_sim'),)
 
     xacro_file = os.path.join(get_package_share_directory('pingu_description'),
                               'urdf',
                               'pingu.urdf.xacro')
-    doc = xacro.parse(open(xacro_file))
-    xacro.process_doc(doc)
+    # load xacro
+    doc = xacro.process_file(xacro_file, 
+        mappings={'prefix': prefix, 
+                  'floating_joint': floating_joint,
+                  'ros2_control': ros2_control,
+                  'hw_plugin': hw_plugin,
+                  'left_arm': left_arm,
+                  'right_arm': right_arm})
     robot_description = {'robot_description': doc.toxml()}
 
-    controller_config_file = os.path.join(mujoco_ros2_control_demos_path, 'config', 'pingu_controllers.yaml')
+    controller_config_file = os.path.join(get_package_share_directory('pingu_ros2_control'), 'config', 'pingu_controllers.yaml')
 
     node_mujoco_ros2_control = Node(
         package='mujoco_ros2_control',
