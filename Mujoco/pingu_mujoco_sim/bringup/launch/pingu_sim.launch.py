@@ -16,7 +16,7 @@ def generate_launch_description():
     mujoco_ros2_control_demos_path = os.path.join(
         get_package_share_directory('pingu_mujoco_sim'),)
 
-    xacro_file = os.path.join(get_package_share_directory('pingu_launch'),
+    xacro_file = os.path.join(get_package_share_directory('pingu_description'),
                               'urdf',
                               'pingu.urdf.xacro')
     doc = xacro.parse(open(xacro_file))
