@@ -23,7 +23,7 @@ endif()
 
 ########### Install ###########
 install(
-  DIRECTORY bringup/config bringup/launch
+  DIRECTORY bringup/launch
   DESTINATION share/${PROJECT_NAME}
 )
 
