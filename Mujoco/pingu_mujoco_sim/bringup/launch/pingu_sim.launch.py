@@ -95,6 +95,14 @@ def generate_launch_description():
         )
     )
 
+    declared_arguments.append(
+        DeclareLaunchArgument(
+            "controller_gui",
+            default_value="true",
+            description="Enable the ros2_control GUI for joint control.",
+        )
+    )
+
     # Initialize Arguments
     gui = LaunchConfiguration("gui")
     prefix = LaunchConfiguration("prefix")
@@ -102,6 +110,7 @@ def generate_launch_description():
     left_arm = LaunchConfiguration("left_arm")
     right_arm = LaunchConfiguration("right_arm")
     controllers = LaunchConfiguration("controllers")
+    controller_gui = LaunchConfiguration("controller_gui")
 
     # Get URDF via xacro
     # Get URDF via xacro
@@ -189,6 +198,15 @@ def generate_launch_description():
         }
     )
 
+    controller_gui_spawner = Node(
+        package="ros2_control_gui",
+        executable="joint_controller_gui",
+        name="joint_controller_gui",
+        output="screen",
+        parameters=[robot_controllers],
+        condition=IfCondition(controller_gui)
+    )
+
     # Delay rviz start after `joint_state_broadcaster`
     delay_rviz_after_joint_state_broadcaster_spawner = RegisterEventHandler(
         event_handler=OnProcessExit(
@@ -204,6 +222,7 @@ def generate_launch_description():
         controller_spawners,
         joint_state_broadcaster_spawner,
         delay_rviz_after_joint_state_broadcaster_spawner,
+        controller_gui_spawner,
     ]
 
     return LaunchDescription(declared_arguments + nodes)
