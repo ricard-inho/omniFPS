@@ -29,9 +29,7 @@ install(
 
 install(
   DIRECTORY 
-    # description/rviz 
     description/mujoco_models
-    description/urdf
   DESTINATION share/${PROJECT_NAME}
 )
 
